@@ -1,8 +1,9 @@
 "use client";
 
-import { MoreHorizontal, Eye, Heart, Play, Trash2, Settings, ExternalLink } from 'lucide-react';
+import { MoreHorizontal, Eye, Heart, Play, Trash2, Settings, ExternalLink, Edit } from 'lucide-react';
 import { Bot } from '@/types';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface BotCardProps {
   bot: Bot;
@@ -12,12 +13,17 @@ interface BotCardProps {
 }
 
 export default function BotCard({ bot, onDelete, onDeploy, onLike }: BotCardProps) {
+  const router = useRouter();
   const [showMenu, setShowMenu] = useState(false);
   const [liked, setLiked] = useState(false);
 
   const handleLike = () => {
     setLiked(!liked);
     onLike(bot.id);
+  };
+
+  const handleEdit = () => {
+    router.push(`/bots/${bot.id}`);
   };
 
   const handleDelete = () => {
@@ -77,6 +83,13 @@ export default function BotCard({ bot, onDelete, onDeploy, onLike }: BotCardProp
             {showMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-10">
                 <div className="py-1">
+                  <button
+                    onClick={handleEdit}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 hover:text-white transition-colors"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit Bot
+                  </button>
                   <button 
                     onClick={() => {
                       setShowMenu(false);

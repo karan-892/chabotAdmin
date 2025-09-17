@@ -31,10 +31,10 @@ export default function MainContent({
 
   const {data:session}=useSession();
 
-  const recentBots = bots.filter(bot => {
-    const timeDiff = Date.now() - bot.deployedAt.getTime();
-    return timeDiff < 24 * 60 * 60 * 1000; // Last 24 hours
-  });
+  // const recentBots = bots.filter(bot => {
+  //   const timeDiff = Date.now() - bot.deployedAt.getTime();
+  //   return timeDiff < 24 * 60 * 60 * 1000; // Last 24 hours
+  // });
 
   if (loading) {
     return (
@@ -77,7 +77,7 @@ export default function MainContent({
         </div>
 
         {/* Recent Section */}
-        {recentBots.length > 0 && (
+        {bots.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center space-x-2 mb-4">
               <Clock className="w-5 h-5 text-gray-400" />
@@ -85,7 +85,7 @@ export default function MainContent({
             </div>
             
             <div className="space-y-3">
-              {recentBots.map((bot) => (
+              {bots.map((bot) => (
                 <div key={bot.id} className="bg-black rounded-lg border border-gray-700 p-4 hover:bg-gray-750 transition-colors">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
@@ -101,9 +101,9 @@ export default function MainContent({
                           <span className="flex items-center space-x-1">
                             <span>{bot.likes} likes</span>
                           </span>
-                          <span>
+                          {/* <span>
                             Deployed {Math.floor((Date.now() - bot.deployedAt.getTime()) / (1000 * 60))} minutes ago
-                          </span>
+                          </span> */}
                         </div>
                       </div>
                     </div>

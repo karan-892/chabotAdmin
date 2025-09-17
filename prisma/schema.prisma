@@ -15,6 +15,96 @@ model User {
   image     String?
   createdAt DateTime? @default(now()) @db.Timestamp(6)
   updatedAt DateTime? @updatedAt @db.Timestamp(6)
+  
+  // Relations
+  bots      Bot[]
+  conversations Conversation[]
 
   @@map("users")
+}
+
+model Bot {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String    @db.VarChar(255)
+  description String?   @db.Text
+  avatar      String?   @db.VarChar(500)
+  status      BotStatus @default(DRAFT)
+  isPublic    Boolean   @default(false)
+  
+  // Bot Configuration
+  config      Json      @default("{}")
+  flows       Json      @default("[]")
+  intents     Json      @default("[]")
+  entities    Json      @default("[]")
+  
+  // Deployment
+  deploymentUrl String? @db.VarChar(500)
+  apiKey        String? @db.VarChar(255)
+  
+  // Analytics
+  totalConversations Int @default(0)
+  totalMessages      Int @default(0)
+  
+  // Relations
+  userId        String        @db.Uuid
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+  analytics     BotAnalytics[]
+  
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt @db.Timestamp(6)
+  
+  @@map("bots")
+}
+
+model Conversation {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sessionId String   @db.VarChar(255)
+  
+  // User info
+  userId    String?  @db.Uuid
+  user      User?    @relation(fields: [userId], references: [id])
+  
+  // Bot info
+  botId     String   @db.Uuid
+  bot       Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
+  
+  // Conversation data
+  messages  Json     @default("[]")
+  context   Json     @default("{}")
+  metadata  Json     @default("{}")
+  
+  // Status
+  isActive  Boolean  @default(true)
+  
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt @db.Timestamp(6)
+  
+  @@map("conversations")
+  @@index([botId, sessionId])
+}
+
+model BotAnalytics {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  botId     String   @db.Uuid
+  bot       Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
+  
+  date      DateTime @db.Date
+  
+  // Metrics
+  conversations Int @default(0)
+  messages      Int @default(0)
+  uniqueUsers   Int @default(0)
+  
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  
+  @@map("bot_analytics")
+  @@unique([botId, date])
+}
+
+enum BotStatus {
+  DRAFT
+  PUBLISHED
+  DEPLOYED
+  ARCHIVED
 }

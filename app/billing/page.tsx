@@ -1,9 +1,38 @@
 "use client";
 
-import { CreditCard, Check, Zap, Calendar, Download } from 'lucide-react';
+import { CreditCard, Check, Zap, Calendar, Download, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/common/components/Button';
+import { useApi } from '@/hooks/useApi';
+import BillingSkeleton from '@/components/skeletons/BillingSkeleton';
+import { useSession } from 'next-auth/react';
 
 export default function BillingPage() {
+  const { data: session } = useSession();
+  
+  const { data: billingData, loading, error } = useApi(async () => {
+    // Mock billing data - replace with actual API call
+    return {
+      data: {
+        currentPlan: {
+          name: 'Community',
+          price: 0,
+          period: 'forever',
+          usage: {
+            bots: { current: 1, limit: 1 },
+            messages: { current: 24, limit: 500 },
+            aiSpend: { current: 0.34, limit: 5.00 },
+            storage: { current: 946.3, limit: 100000 },
+          }
+        },
+        billingHistory: [
+          { date: '2024-01-01', description: 'Pro Plan - Monthly', amount: 29.00, status: 'paid' },
+          { date: '2023-12-01', description: 'Pro Plan - Monthly', amount: 29.00, status: 'paid' },
+          { date: '2023-11-01', description: 'Pro Plan - Monthly', amount: 29.00, status: 'paid' },
+        ]
+      }
+    };
+  });
+
   const plans = [
     {
       name: 'Community',
@@ -50,11 +79,23 @@ export default function BillingPage() {
     }
   ];
 
-  const billingHistory = [
-    { date: '2024-01-01', description: 'Pro Plan - Monthly', amount: 29.00, status: 'paid' },
-    { date: '2023-12-01', description: 'Pro Plan - Monthly', amount: 29.00, status: 'paid' },
-    { date: '2023-11-01', description: 'Pro Plan - Monthly', amount: 29.00, status: 'paid' },
-  ];
+  if (loading) {
+    return <BillingSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-white mb-2">Failed to load billing data</h3>
+            <p className="text-gray-400">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -68,20 +109,27 @@ export default function BillingPage() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-lg font-semibold text-white">Current Plan</h3>
-            <p className="text-gray-400">You're currently on the Community plan</p>
+            <p className="text-gray-400">You're currently on the {billingData?.currentPlan?.name || 'Community'} plan</p>
           </div>
           <div className="text-right">
-            <div className="text-2xl font-bold text-white">$0</div>
-            <div className="text-sm text-gray-400">per month</div>
+            <div className="text-2xl font-bold text-white">${billingData?.currentPlan?.price || 0}</div>
+            <div className="text-sm text-gray-400">per {billingData?.currentPlan?.period || 'month'}</div>
           </div>
         </div>
         
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="w-full bg-gray-700 rounded-full h-2 max-w-xs">
-              <div className="bg-red-500 h-2 rounded-full" style={{ width: '100%' }} />
+              <div 
+                className="bg-red-500 h-2 rounded-full" 
+                style={{ 
+                  width: `${((billingData?.currentPlan?.usage?.bots?.current || 1) / (billingData?.currentPlan?.usage?.bots?.limit || 1)) * 100}%` 
+                }} 
+              />
             </div>
-            <span className="text-sm text-gray-400">1/1 Bots used</span>
+            <span className="text-sm text-gray-400">
+              {billingData?.currentPlan?.usage?.bots?.current || 1}/{billingData?.currentPlan?.usage?.bots?.limit || 1} Bots used
+            </span>
           </div>
           <Button className="bg-blue-600 hover:bg-blue-700">
             Upgrade Plan
@@ -165,8 +213,9 @@ export default function BillingPage() {
         </div>
 
         {billingHistory.length > 0 ? (
+        {(billingData?.billingHistory || []).length > 0 ? (
           <div className="space-y-4">
-            {billingHistory.map((invoice, index) => (
+            {(billingData?.billingHistory || []).map((invoice, index) => (
               <div key={index} className="flex items-center justify-between py-3 border-b border-gray-700 last:border-b-0">
                 <div className="flex items-center space-x-4">
                   <CreditCard className="w-5 h-5 text-gray-400" />

@@ -4,14 +4,17 @@ import { TrendingUp, MessageSquare, Sparkles, HardDrive, ExternalLink, RefreshCw
 import { UsageStat, Activity } from '@/types';
 import UsageCard from '@/components/ui/UsageCard';
 import ActivityItem from '@/components/ui/ActivityItem';
+import UsageCardSkeleton from '@/components/skeletons/UsageCardSkeleton';
+import ActivityItemSkeleton from '@/components/skeletons/ActivityItemSkeleton';
 import { useState } from 'react';
 
 interface RightSidebarProps {
   usageStats: UsageStat[];
   activities: Activity[];
+  loading?: boolean;
 }
 
-export default function RightSidebar({ usageStats, activities }: RightSidebarProps) {
+export default function RightSidebar({ usageStats, activities, loading = false }: RightSidebarProps) {
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefreshUsage = async () => {
@@ -38,9 +41,15 @@ export default function RightSidebar({ usageStats, activities }: RightSidebarPro
           </div>
           
           <div className="space-y-4">
-            {usageStats.map((stat, index) => (
-              <UsageCard key={index} stat={stat} />
-            ))}
+            {loading ? (
+              Array.from({ length: 4 }).map((_, index) => (
+                <UsageCardSkeleton key={index} />
+              ))
+            ) : (
+              usageStats.map((stat, index) => (
+                <UsageCard key={index} stat={stat} />
+              ))
+            )}
           </div>
           
           <button className="w-full mt-4 text-blue-400 hover:text-blue-300 text-sm flex items-center justify-center space-x-1 transition-colors group">
@@ -59,7 +68,11 @@ export default function RightSidebar({ usageStats, activities }: RightSidebarPro
           </div>
           
           <div className="space-y-3 max-h-96 overflow-y-auto">
-            {activities.length > 0 ? (
+            {loading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <ActivityItemSkeleton key={index} />
+              ))
+            ) : activities.length > 0 ? (
               activities.map((activity) => (
                 <ActivityItem key={activity.id} activity={activity} />
               ))

@@ -1,14 +1,54 @@
 "use client";
 
-import { Settings, User, Bell, Shield, Key, Trash2, Save } from 'lucide-react';
+import { Settings, User, Bell, Shield, Key, Trash2, Save, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/common/components/Button';
 import { useSession } from 'next-auth/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/components/Avatar';
 import { useState } from 'react';
+import SettingsSkeleton from '@/components/skeletons/SettingsSkeleton';
+import { useAsyncAction } from '@/hooks/useApi';
 
 export default function SettingsPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState('profile');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    workspace: '',
+    bio: '',
+  });
+
+  const { execute: saveSettings, loading: saving, error: saveError } = useAsyncAction(
+    async (data: any) => {
+      const response = await fetch('/api/user/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to save settings');
+      return response.json();
+    }
+  );
+
+  // Initialize form data when session loads
+  useState(() => {
+    if (session?.user) {
+      setFormData({
+        name: session.user.name || '',
+        email: session.user.email || '',
+        workspace: `${session.user.name}'s Workspace`,
+        bio: '',
+      });
+    }
+  });
+
+  const handleSaveSettings = async () => {
+    const result = await saveSettings(formData);
+    if (result) {
+      // Show success message
+      console.log('Settings saved successfully');
+    }
+  };
 
   const tabs = [
     { id: 'profile', name: 'Profile', icon: User },
@@ -16,6 +56,24 @@ export default function SettingsPage() {
     { id: 'security', name: 'Security', icon: Shield },
     { id: 'api', name: 'API Keys', icon: Key },
   ];
+
+  if (status === 'loading') {
+    return <SettingsSkeleton />;
+  }
+
+  if (!session) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-white mb-2">Authentication Required</h3>
+            <p className="text-gray-400">Please log in to access settings</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -43,7 +101,8 @@ export default function SettingsPage() {
                     <label className="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
                     <input
                       type="text"
-                      defaultValue={session?.user?.name || ''}
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -51,7 +110,8 @@ export default function SettingsPage() {
                     <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
                     <input
                       type="email"
-                      defaultValue={session?.user?.email || ''}
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -61,7 +121,8 @@ export default function SettingsPage() {
                   <label className="block text-sm font-medium text-gray-300 mb-2">Workspace Name</label>
                   <input
                     type="text"
-                    defaultValue={`${session?.user?.name}'s Workspace`}
+                    value={formData.workspace}
+                    onChange={(e) => setFormData({ ...formData, workspace: e.target.value })}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -70,6 +131,8 @@ export default function SettingsPage() {
                   <label className="block text-sm font-medium text-gray-300 mb-2">Bio</label>
                   <textarea
                     rows={3}
+                    value={formData.bio}
+                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                     placeholder="Tell us about yourself..."
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
@@ -222,6 +285,12 @@ export default function SettingsPage() {
             {renderTabContent()}
             
             {/* Save Button */}
+            {saveError && (
+              <div className="bg-red-900/20 border border-red-700 rounded-lg p-4 mb-4">
+                <p className="text-red-300 text-sm">{saveError}</p>
+              </div>
+            )}
+            
             <div className="flex items-center justify-between pt-6 mt-6 border-t border-gray-700">
               <div className="flex items-center space-x-4">
                 <Button variant="destructive" className="bg-red-600 hover:bg-red-700">
@@ -229,9 +298,13 @@ export default function SettingsPage() {
                   Delete Account
                 </Button>
               </div>
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button 
+                onClick={handleSaveSettings}
+                disabled={saving}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
                 <Save className="w-4 h-4 mr-2" />
-                Save Changes
+                {saving ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
           </div>

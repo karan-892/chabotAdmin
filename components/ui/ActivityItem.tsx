@@ -8,10 +8,10 @@ interface ActivityItemProps {
 }
 
 export default function ActivityItem({ activity }: ActivityItemProps) {
-  const getActivityIcon = (type: Activity['type']) => {
+  const getActivityIcon = (type: string) => {
     switch (type) {
       case 'create':
-        return '🎉';
+        return '🆕';
       case 'update':
         return '✏️';
       case 'delete':
@@ -25,60 +25,40 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
     }
   };
 
-  const getActivityColor = (type: Activity['type']) => {
+  const getActivityColor = (type: string) => {
     switch (type) {
       case 'create':
-        return 'text-green-400';
+        return 'bg-green-500';
       case 'update':
-        return 'text-blue-400';
+        return 'bg-blue-500';
       case 'delete':
-        return 'text-red-400';
+        return 'bg-red-500';
       case 'deploy':
-        return 'text-purple-400';
+        return 'bg-purple-500';
       case 'view':
-        return 'text-gray-400';
+        return 'bg-gray-500';
       default:
-        return 'text-gray-400';
+        return 'bg-gray-500';
     }
   };
 
   return (
-    <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-700 transition-colors group">
-      <div className="flex-shrink-0">
-        <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
-          <span className="text-white text-xs font-medium">{activity.user}</span>
-        </div>
+    <div className="flex items-start space-x-3">
+      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium flex-shrink-0 ${getActivityColor(activity.type)}`}>
+        {activity.user}
       </div>
-      
       <div className="flex-1 min-w-0">
-        <div className="flex items-center space-x-2 mb-1">
-          <span className="text-sm">{getActivityIcon(activity.type)}</span>
-          <span className={`text-xs font-medium ${getActivityColor(activity.type)}`}>
-            {activity.type.toUpperCase()}
-          </span>
-        </div>
-        
-        <p className="text-sm text-gray-300 leading-relaxed">
-          <span className="font-medium text-white">{activity.user}</span>
-          {' '}
-          <span>{activity.action}</span>
-          {' '}
-          <span className="font-medium text-blue-400 hover:text-blue-300 cursor-pointer transition-colors">
-            {activity.target}
-          </span>
+        <p className="text-sm text-gray-300">
+          <span className="font-medium">{activity.user}</span>{' '}
+          <span>{activity.action}</span>{' '}
+          <span className="font-medium text-white">{activity.target}</span>
         </p>
-        
         <p className="text-xs text-gray-500 mt-1">
-          {formatDistanceToNow(activity.time, { addSuffix: true })}
+          {formatDistanceToNow(new Date(activity.time), { addSuffix: true })}
         </p>
       </div>
-      
-      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button className="text-gray-400 hover:text-white p-1 rounded transition-colors">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-          </svg>
-        </button>
+      <div className="text-lg flex-shrink-0">
+        {getActivityIcon(activity.type)}
       </div>
     </div>
   );

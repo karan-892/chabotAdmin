@@ -1,24 +1,61 @@
 "use client";
 
-import { BarChart3, TrendingUp, Calendar, Download } from 'lucide-react';
+import { BarChart3, TrendingUp, Calendar, Download, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/common/components/Button';
+import { useApi } from '@/hooks/useApi';
+import UsagePageSkeleton from '@/components/skeletons/UsagePageSkeleton';
 
 export default function UsagePage() {
-  const usageData = [
-    { label: 'Bot Count', current: 1, limit: 1, percentage: 100, color: 'red' },
-    { label: 'Messages', current: 24, limit: 500, percentage: 4.8, color: 'blue' },
-    { label: 'AI Spend', current: 0.34, limit: 5.00, percentage: 6.8, color: 'green' },
-    { label: 'Storage', current: 946.3, limit: 100000, percentage: 0.9, color: 'purple' },
-  ];
+  const { data: usageData, loading, error, refetch } = useApi(async () => {
+    const response = await fetch('/api/usage');
+    if (!response.ok) throw new Error('Failed to fetch usage data');
+    return response.json();
+  });
 
-  const monthlyUsage = [
-    { month: 'Jan', messages: 120, aiSpend: 2.4 },
-    { month: 'Feb', messages: 180, aiSpend: 3.2 },
-    { month: 'Mar', messages: 240, aiSpend: 4.1 },
-    { month: 'Apr', messages: 320, aiSpend: 5.8 },
-    { month: 'May', messages: 280, aiSpend: 4.9 },
-    { month: 'Jun', messages: 350, aiSpend: 6.2 },
-  ];
+  const handleExportReport = async () => {
+    try {
+      // Implement export functionality
+      const data = {
+        usageStats: usageData?.usageStats,
+        monthlyData: usageData?.monthlyData,
+        insights: usageData?.insights,
+        exportDate: new Date().toISOString(),
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `usage-report-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error exporting report:', error);
+    }
+  };
+
+  if (loading) {
+    return <UsagePageSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-white mb-2">Failed to load usage data</h3>
+            <p className="text-gray-400 mb-4">{error}</p>
+            <Button onClick={refetch} className="bg-blue-600 hover:bg-blue-700">
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -29,13 +66,13 @@ export default function UsagePage() {
         </div>
         <Button className="bg-blue-600 hover:bg-blue-700">
           <Download className="w-4 h-4 mr-2" />
-          Export Report
+          <span onClick={handleExportReport}>Export Report</span>
         </Button>
       </div>
 
       {/* Current Usage Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {usageData.map((item, index) => (
+        {usageData?.usageStats?.map((item, index) => (
           <div key={index} className="bg-gray-800 border border-gray-700 rounded-lg p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium text-gray-400">{item.label}</h3>
@@ -44,12 +81,12 @@ export default function UsagePage() {
             
             <div className="mb-4">
               <div className="text-2xl font-bold text-white mb-1">
-                {item.label === 'AI Spend' ? `$${item.current}` : 
-                 item.label === 'Storage' ? `${item.current}kB` : item.current}
+                {item.unit === '$' ? `$${item.value.toFixed(2)}` : 
+                 item.unit === 'kB' ? `${item.value.toFixed(1)}${item.unit}` : item.value}
               </div>
               <div className="text-sm text-gray-400">
-                of {item.label === 'AI Spend' ? `$${item.limit}` : 
-                    item.label === 'Storage' ? `${item.limit}kB` : item.limit}
+                of {item.unit === '$' ? `$${item.max.toFixed(2)}` : 
+                    item.unit === 'kB' ? `${item.max}${item.unit}` : item.max}
               </div>
             </div>
             
@@ -78,7 +115,7 @@ export default function UsagePage() {
           </div>
           
           <div className="space-y-4">
-            {monthlyUsage.map((month, index) => (
+            {usageData?.monthlyData?.map((month, index) => (
               <div key={index} className="flex items-center justify-between">
                 <span className="text-gray-400 text-sm w-12">{month.month}</span>
                 <div className="flex-1 mx-4">
@@ -103,7 +140,7 @@ export default function UsagePage() {
           </div>
           
           <div className="space-y-4">
-            {monthlyUsage.map((month, index) => (
+            {usageData?.monthlyData?.map((month, index) => (
               <div key={index} className="flex items-center justify-between">
                 <span className="text-gray-400 text-sm w-12">{month.month}</span>
                 <div className="flex-1 mx-4">
@@ -126,15 +163,21 @@ export default function UsagePage() {
         <h3 className="text-lg font-semibold text-white mb-4">Usage Insights</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-400 mb-1">↑ 23%</div>
+            <div className="text-2xl font-bold text-green-400 mb-1">
+              ↑ {usageData?.insights?.messagesGrowth || 0}%
+            </div>
             <div className="text-sm text-gray-400">Messages this month</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-400 mb-1">↑ 15%</div>
+            <div className="text-2xl font-bold text-blue-400 mb-1">
+              ↑ {usageData?.insights?.aiEfficiency || 0}%
+            </div>
             <div className="text-sm text-gray-400">AI efficiency</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-purple-400 mb-1">↓ 8%</div>
+            <div className="text-2xl font-bold text-purple-400 mb-1">
+              ↓ {Math.abs(usageData?.insights?.responseTimeImprovement || 0)}%
+            </div>
             <div className="text-sm text-gray-400">Response time</div>
           </div>
         </div>

@@ -1,61 +1,111 @@
 "use client";
 
-import { Zap, Plus, Settings, ExternalLink } from 'lucide-react';
+import { Zap, Plus, Settings, ExternalLink, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/common/components/Button';
+import { useApi } from '@/hooks/useApi';
+import IntegrationsSkeleton from '@/components/skeletons/IntegrationsSkeleton';
+import { useState } from 'react';
 
 export default function IntegrationsPage() {
-  const integrations = [
-    {
-      id: '1',
-      name: 'Slack',
-      description: 'Connect your bots to Slack channels',
-      icon: '💬',
-      status: 'available',
-      category: 'Communication'
-    },
-    {
-      id: '2',
-      name: 'Discord',
-      description: 'Deploy bots to Discord servers',
-      icon: '🎮',
-      status: 'available',
-      category: 'Communication'
-    },
-    {
-      id: '3',
-      name: 'WhatsApp',
-      description: 'Connect to WhatsApp Business API',
-      icon: '📱',
-      status: 'coming-soon',
-      category: 'Communication'
-    },
-    {
-      id: '4',
-      name: 'Telegram',
-      description: 'Deploy bots to Telegram',
-      icon: '✈️',
-      status: 'available',
-      category: 'Communication'
-    },
-    {
-      id: '5',
-      name: 'Webhook',
-      description: 'Custom webhook integrations',
-      icon: '🔗',
-      status: 'available',
-      category: 'API'
-    },
-    {
-      id: '6',
-      name: 'Zapier',
-      description: 'Connect with 5000+ apps',
-      icon: '⚡',
-      status: 'available',
-      category: 'Automation'
-    }
-  ];
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  
+  const { data: integrationsData, loading, error } = useApi(async () => {
+    // Mock integrations data - replace with actual API call
+    return {
+      data: {
+        integrations: [
+          {
+            id: '1',
+            name: 'Slack',
+            description: 'Connect your bots to Slack channels',
+            icon: '💬',
+            status: 'available',
+            category: 'Communication',
+            connected: false,
+          },
+          {
+            id: '2',
+            name: 'Discord',
+            description: 'Deploy bots to Discord servers',
+            icon: '🎮',
+            status: 'available',
+            category: 'Communication',
+            connected: false,
+          },
+          {
+            id: '3',
+            name: 'WhatsApp',
+            description: 'Connect to WhatsApp Business API',
+            icon: '📱',
+            status: 'coming-soon',
+            category: 'Communication',
+            connected: false,
+          },
+          {
+            id: '4',
+            name: 'Telegram',
+            description: 'Deploy bots to Telegram',
+            icon: '✈️',
+            status: 'available',
+            category: 'Communication',
+            connected: false,
+          },
+          {
+            id: '5',
+            name: 'Webhook',
+            description: 'Custom webhook integrations',
+            icon: '🔗',
+            status: 'available',
+            category: 'API',
+            connected: false,
+          },
+          {
+            id: '6',
+            name: 'Zapier',
+            description: 'Connect with 5000+ apps',
+            icon: '⚡',
+            status: 'available',
+            category: 'Automation',
+            connected: false,
+          }
+        ]
+      }
+    };
+  });
 
   const categories = ['All', 'Communication', 'API', 'Automation'];
+  
+  const handleConnectIntegration = async (integrationId: string) => {
+    try {
+      // Implement connection logic
+      console.log('Connecting integration:', integrationId);
+    } catch (error) {
+      console.error('Error connecting integration:', error);
+    }
+  };
+
+  if (loading) {
+    return <IntegrationsSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-white mb-2">Failed to load integrations</h3>
+            <p className="text-gray-400">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const integrations = integrationsData?.integrations || [];
+  const filteredIntegrations = selectedCategory === 'All' 
+    ? integrations 
+    : integrations.filter(integration => integration.category === selectedCategory);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -69,7 +119,8 @@ export default function IntegrationsPage() {
         {categories.map((category) => (
           <Button
             key={category}
-            variant={category === 'All' ? 'default' : 'outline'}
+            onClick={() => setSelectedCategory(category)}
+            variant={category === selectedCategory ? 'default' : 'outline'}
             className="rounded-full"
           >
             {category}
@@ -79,7 +130,7 @@ export default function IntegrationsPage() {
 
       {/* Integrations Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {integrations.map((integration) => (
+        {filteredIntegrations.map((integration) => (
           <div
             key={integration.id}
             className="bg-gray-800 border border-gray-700 rounded-lg p-6 hover:bg-gray-750 transition-colors"
@@ -105,9 +156,10 @@ export default function IntegrationsPage() {
               <Button
                 size="sm"
                 disabled={integration.status !== 'available'}
+                onClick={() => handleConnectIntegration(integration.id)}
                 className="bg-blue-600 hover:bg-blue-700"
               >
-                {integration.status === 'available' ? 'Connect' : 'Soon'}
+                {integration.connected ? 'Connected' : integration.status === 'available' ? 'Connect' : 'Soon'}
               </Button>
             </div>
           </div>

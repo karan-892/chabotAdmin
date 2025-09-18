@@ -9,8 +9,8 @@ import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
   const [bots, setBots] = useState<Bot[]>([]);
-  // const [activities, setActivities] = useState<Activity[]>([]);
-  // const [usageStats, setUsageStats] = useState<UsageStat[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [usageStats, setUsageStats] = useState<UsageStat[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -51,67 +51,67 @@ export default function Dashboard() {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
 
-      // setUsageStats([
-      //   {
-      //     label: 'Bot Count',
-      //     value: 1,
-      //     max: 1,
-      //     color: 'red',
-      //     percentage: 100,
-      //     unit: ''
-      //   },
-      //   {
-      //     label: 'Incoming Messages & Events',
-      //     value: 24,
-      //     max: 500,
-      //     color: 'blue',
-      //     percentage: 4.8,
-      //     unit: ''
-      //   },
-      //   {
-      //     label: 'AI Spend',
-      //     value: 0.34,
-      //     max: 5.00,
-      //     color: 'green',
-      //     percentage: 6.8,
-      //     unit: '$'
-      //   },
-      //   {
-      //     label: 'File Storage',
-      //     value: 946.3,
-      //     max: 100000,
-      //     color: 'purple',
-      //     percentage: 0.9,
-      //     unit: 'kB'
-      //   },
-      // ]);
+      setUsageStats([
+        {
+          label: 'Bot Count',
+          value: 1,
+          max: 1,
+          color: 'red',
+          percentage: 100,
+          unit: ''
+        },
+        {
+          label: 'Incoming Messages & Events',
+          value: 24,
+          max: 500,
+          color: 'blue',
+          percentage: 4.8,
+          unit: ''
+        },
+        {
+          label: 'AI Spend',
+          value: 0.34,
+          max: 5.00,
+          color: 'green',
+          percentage: 6.8,
+          unit: '$'
+        },
+        {
+          label: 'File Storage',
+          value: 946.3,
+          max: 100000,
+          color: 'purple',
+          percentage: 0.9,
+          unit: 'kB'
+        },
+      ]);
 
-      // setActivities([
-      //   {
-      //     id: '1',
-      //     user: 'K',
-      //     action: 'updated the bot information of',
-      //     target: 'Titans Legacy - Brand AI Assistant',
-      //     time: new Date(Date.now() - 34 * 60 * 1000),
-      //     type: 'update'
-      //   },
-      //   {
-      //     id: '2',
-      //     user: 'K',
-      //     action: 'updated a bot channel for',
-      //     target: 'Titans Legacy - Brand AI Assistant',
-      //     time: new Date(Date.now() - 34 * 60 * 1000),
-      //     type: 'update'
-      //   },
-      //   {
-      //     id: '3',
-      //     user: 'K',
-      //     action: 'updated the bot information of',
-      //     target: 'Titans Legacy - Brand AI Assistant',
-      //     time: new Date(Date.now() - 39 * 60 * 1000),
-      //     type: 'update'
-      //   },
-      // ]);
+      setActivities([
+        {
+          id: '1',
+          user: 'K',
+          action: 'updated the bot information of',
+          target: 'Titans Legacy - Brand AI Assistant',
+          time: new Date(Date.now() - 34 * 60 * 1000),
+          type: 'update'
+        },
+        {
+          id: '2',
+          user: 'K',
+          action: 'updated a bot channel for',
+          target: 'Titans Legacy - Brand AI Assistant',
+          time: new Date(Date.now() - 34 * 60 * 1000),
+          type: 'update'
+        },
+        {
+          id: '3',
+          user: 'K',
+          action: 'updated the bot information of',
+          target: 'Titans Legacy - Brand AI Assistant',
+          time: new Date(Date.now() - 39 * 60 * 1000),
+          type: 'update'
+        },
+      ]);
 
       setLoading(false);
     };
@@ -223,10 +223,10 @@ export default function Dashboard() {
         />
 
         {/* Right sidebar */}
-        {/* <RightSidebar
+        <RightSidebar
           usageStats={usageStats}
           activities={activities}
-        /> */}
+        />
       </div>
     </Layout>
   );

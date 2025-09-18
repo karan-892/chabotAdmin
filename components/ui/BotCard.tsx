@@ -9,15 +9,17 @@ import { deployBot, deleteBot } from '@/lib/api';
 
 interface BotCardProps {
   bot: {
-    id: string;
-    name: string;
-    description: string;
-    status: string;
-    totalMessages: number;
-    totalConversations: number;
-    deploymentUrl?: string;
-    createdAt: string;
-    updatedAt: string;
+     id: string;
+  name: string;
+  description?: string;
+  avatar?: string;
+  status: string;
+  totalMessages: number;
+  totalConversations: number;
+  deploymentUrl?: string;
+  views?: number;
+  likes?: number;
+  image?: string;
   };
   onDelete: (botId: string) => void;
   onDeploy: (botId: string) => void;

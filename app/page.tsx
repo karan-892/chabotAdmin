@@ -94,10 +94,10 @@ export default function Dashboard() {
         />
 
         {/* Right sidebar */}
-        <RightSidebar
+        {/* <RightSidebar
           usageStats={usageData?.usageStats || []}
           activities={activitiesData?.activities || []}
-        />
+        /> */}
       </div>
     </Layout>
   );

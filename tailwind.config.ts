@@ -21,48 +21,48 @@ const config: Config = {
       },
       colors: {
         // ---- merged palette ----
-        background: 'hsl(220, 15%, 16%)',
+        background: 'hsl(0, 0%, 0%)',
         foreground: 'hsl(0, 0%, 95%)',
         card: {
-          DEFAULT: 'hsl(220, 15%, 20%)',
+          DEFAULT: 'hsl(0, 0%, 5%)',
           foreground: 'hsl(0, 0%, 95%)',
         },
         popover: {
-          DEFAULT: 'hsl(220, 15%, 22%)',
+          DEFAULT: 'hsl(0, 0%, 8%)',
           foreground: 'hsl(0, 0%, 95%)',
         },
         primary: {
-          DEFAULT: 'hsla(212, 87%, 3%, 1)',
+          DEFAULT: 'hsl(255, 100%, 50%)',
           foreground: 'hsl(0, 0%, 100%)',
         },
         secondary: {
-          DEFAULT: 'hsl(220, 15%, 30%)',
+          DEFAULT: 'hsl(0, 0%, 15%)',
           foreground: 'hsl(0, 0%, 95%)',
         },
         muted: {
-          DEFAULT: 'hsl(220, 15%, 25%)',
-          foreground: 'hsl(220, 10%, 65%)',
+          DEFAULT: 'hsl(0, 0%, 10%)',
+          foreground: 'hsl(0, 0%, 65%)',
         },
         accent: {
-          DEFAULT: 'hsla(211, 84%, 5%, 1)',
+          DEFAULT: 'hsl(255, 100%, 45%)',
           foreground: 'hsl(0, 0%, 100%)',
         },
         destructive: {
           DEFAULT: 'hsl(0, 84%, 45%)',
           foreground: 'hsl(0, 0%, 100%)',
         },
-        border: 'hsl(220, 15%, 30%)',
-        input: 'hsl(220, 15%, 25%)',
-        ring: 'hsla(208, 81%, 4%, 1)',
+        border: 'hsl(0, 0%, 20%)',
+        input: 'hsl(0, 0%, 10%)',
+        ring: 'hsl(255, 100%, 50%)',
         chart: {
-          1: 'hsl(210, 100%, 45%)',
-          2: 'hsl(220, 70%, 50%)',
+          1: 'hsl(255, 100%, 50%)',
+          2: 'hsl(200, 70%, 50%)',
           3: 'hsl(280, 65%, 60%)',
           4: 'hsl(160, 60%, 45%)',
           5: 'hsl(30, 80%, 55%)',
         },
         // ✅ keep extra custom color here too
-        'electric-blue': '#0ea5e9',
+        'electric-blue': '#ff0080',
       },
       keyframes: {
         'accordion-down': {

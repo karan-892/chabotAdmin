@@ -61,7 +61,7 @@ export default function MainContent({
                   src={session?.user?.image || ''}
                   alt={session?.user?.name || 'User'}
                 />
-                <AvatarFallback className="bg-electric-blue text-white">
+                <AvatarFallback className="bg-purple-600 text-white">
                   {session?.user?.name
                     ?.split(' ')
                     .map((n) => n[0])
@@ -94,7 +94,7 @@ export default function MainContent({
                 <div key={bot.id} className="bg-black rounded-lg border border-gray-700 p-4 hover:bg-gray-750 transition-colors">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-teal-500 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
                         <Zap className="w-5 h-5 text-white" />
                       </div>
                       <div>
@@ -117,7 +117,7 @@ export default function MainContent({
                         ? 'bg-green-900 text-green-300'
                         : bot.status === 'error'
                           ? 'bg-red-900 text-red-300'
-                          : 'bg-yellow-900 text-yellow-300'
+                          : 'bg-purple-900 text-purple-300'
                         }`}>
                         {bot.status}
                       </span>
@@ -141,10 +141,10 @@ export default function MainContent({
                 placeholder="Find a bot"
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-black border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                className="w-full pl-10 pr-4 py-3 bg-black border border-gray-800 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
               />
             </div>
-            <button className="flex items-center space-x-2 px-4 py-3 bg-black border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-colors">
+            <button className="flex items-center space-x-2 px-4 py-3 bg-black border border-gray-800 rounded-lg text-gray-300 hover:text-white hover:bg-gray-900 transition-colors">
               <Filter className="w-4 h-4" />
               <span>Filter</span>
             </button>
@@ -166,10 +166,10 @@ export default function MainContent({
             {bots.length > 0 && (
               <div
                 onClick={onCreateBot}
-                className="border-2 border-dashed border-gray-700 rounded-lg p-8 flex items-center justify-center gap-2 hover:border-blue-500 transition-colors cursor-pointer group"
+                className="border-2 border-dashed border-gray-800 rounded-lg p-8 flex items-center justify-center gap-2 hover:border-purple-500 transition-colors cursor-pointer group"
               >
-                <Plus className="w-3 h-3 text-gray-400 group-hover:text-blue-500 transition-colors" />
-                <span className="text-gray-400 font-sm text-xs group-hover:text-blue-500 transition-colors">Create Bot</span>
+                <Plus className="w-3 h-3 text-gray-400 group-hover:text-purple-500 transition-colors" />
+                <span className="text-gray-400 font-sm text-xs group-hover:text-purple-500 transition-colors">Create Bot</span>
               </div>
             )}
 
@@ -183,7 +183,7 @@ export default function MainContent({
                   <p className='text-gray-500 text-sm'>Your workspace has no bots. Get started by creating a new bot</p>
                   <button
                     onClick={onCreateBot}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center space-x-2 mx-auto transition-colors"
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg flex items-center space-x-2 mx-auto transition-colors"
                   >
                     <Plus className="w-5 h-5" />
                     <span>Create Bot</span>

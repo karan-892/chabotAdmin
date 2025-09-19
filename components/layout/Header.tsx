@@ -63,7 +63,7 @@ export default function Header({ onMobileMenuToggle, sidebarCollapsed }: HeaderP
             <div className="flex items-center">
               <button
                 type="button"
-                className="lg:hidden -ml-2 mr-2 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white transition-colors"
+                className="lg:hidden -ml-2 mr-2 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-white hover:bg-black focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white transition-colors"
                 onClick={onMobileMenuToggle}
               >
                 <Menu className="h-6 w-6" />
@@ -75,18 +75,18 @@ export default function Header({ onMobileMenuToggle, sidebarCollapsed }: HeaderP
               <div className="relative">
                 <button 
                   onClick={() => setSearchOpen(!searchOpen)}
-                  className="text-gray-400 hover:text-white p-2 rounded-md hover:bg-gray-700 transition-colors"
+                  className="text-gray-400 hover:text-white p-2 rounded-md hover:bg-black transition-colors"
                 >
                   <Search className="h-5 w-5" />
                 </button>
                 
                 {searchOpen && (
-                  <div className="absolute right-0 mt-2 w-80 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 mt-2 w-80 bg-black border border-gray-800 rounded-lg shadow-lg z-50">
                     <div className="p-4">
                       <input
                         type="text"
                         placeholder="Search bots, settings, or help..."
-                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 bg-black border border-gray-800 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                         autoFocus
                       />
                     </div>
@@ -96,10 +96,10 @@ export default function Header({ onMobileMenuToggle, sidebarCollapsed }: HeaderP
 
               {/* Notifications */}
               <div className="relative">
-                <button className="text-gray-400 hover:text-white p-2 rounded-md hover:bg-gray-700 transition-colors">
+                <button className="text-gray-400 hover:text-white p-2 rounded-md hover:bg-black transition-colors">
                   <Bell className="h-5 w-5" />
                   {notifications > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-purple-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {notifications}
                     </span>
                   )}
@@ -117,7 +117,7 @@ export default function Header({ onMobileMenuToggle, sidebarCollapsed }: HeaderP
                         alt={session?.user?.name || 'User'}
                         className='rounded-full'
                       />
-                      <AvatarFallback className="bg-electric-blue text-white">
+                      <AvatarFallback className="bg-purple-600 text-white">
                         {session?.user?.name
                           ?.split(' ')
                           .map((n) => n[0])
@@ -128,7 +128,7 @@ export default function Header({ onMobileMenuToggle, sidebarCollapsed }: HeaderP
                   </div>
                   <Button
                     variant="ghost"
-                    className="bg-blue-500 hover:bg-blue-600 hover:text-white text-white font-medium flex items-center space-x-2"
+                    className="bg-purple-600 hover:bg-purple-700 hover:text-white text-white font-medium flex items-center space-x-2"
                     onClick={handleLogout}
                   >
                     <span>Logout</span>
@@ -136,7 +136,7 @@ export default function Header({ onMobileMenuToggle, sidebarCollapsed }: HeaderP
                 </div>): (
                 <Button
                   variant="default"
-                  className="bg-electric-blue hover:bg-electric-blue/90 text-white font-medium"
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-medium"
                   onClick={() => setShowAuthModal(true)}
                 >
                   Login

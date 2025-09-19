@@ -57,13 +57,13 @@ export default function Sidebar({ collapsed, mobileOpen, onCollapse, onMobileClo
           {/* Workspace header */}
           <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
             <div className="flex items-center px-4">
-              <div className="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
                 <Bot className="w-5 h-5 text-white" />
               </div>
               {!collapsed && (
                 <div className="ml-3">
                   <p className="text-sm font-medium text-white truncate">{session?.user?.name}'s Workspace</p>
-                  <p className="text-xs text-gray-400">Community</p>
+                  <p className="text-xs text-gray-400">Free Plan</p>
                 </div>
               )}
             </div>
@@ -76,8 +76,8 @@ export default function Sidebar({ collapsed, mobileOpen, onCollapse, onMobileClo
                   onClick={() => handleNavClick(item.href)}
                   className={`w-full group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                     isActive(item.href)
-                      ? 'bg-gray-700 text-white'
-                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                      ? 'bg-purple-600 text-white'
+                      : 'text-gray-300 hover:bg-gray-900 hover:text-white'
                   }`}
                 >
                   <item.icon className="mr-3 flex-shrink-0 h-5 w-5" />
@@ -88,15 +88,15 @@ export default function Sidebar({ collapsed, mobileOpen, onCollapse, onMobileClo
             
             {/* AI Spend section */}
             {!collapsed && aiSpendStat && (
-              <div className="mt-auto px-4 py-4 border-t border-gray-700">
+              <div className="mt-auto px-4 py-4 border-t border-gray-800">
                 <div className="flex items-center">
-                  <Sparkles className="w-4 h-4 text-teal-400 mr-2" />
+                  <Sparkles className="w-4 h-4 text-purple-400 mr-2" />
                   <span className="text-sm text-gray-300">AI Spend</span>
                 </div>
                 <div className="mt-2">
-                  <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-gray-800 rounded-full h-2">
                     <div 
-                      className="bg-teal-500 h-2 rounded-full transition-all duration-500" 
+                      className="bg-purple-500 h-2 rounded-full transition-all duration-500" 
                       style={{ width: `${aiSpendStat.percentage}%` }}
                     ></div>
                   </div>
@@ -109,10 +109,10 @@ export default function Sidebar({ collapsed, mobileOpen, onCollapse, onMobileClo
           </div>
           
           {/* Collapse button */}
-          <div className="flex-shrink-0 p-4 border-t border-gray-700">
+          <div className="flex-shrink-0 p-4 border-t border-gray-800">
             <button
               onClick={onCollapse}
-              className="w-full flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+              className="w-full flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-900 transition-colors"
             >
               <ChevronLeft className={`w-4 h-4 transition-transform ${collapsed ? 'rotate-180' : ''}`} />
             </button>
@@ -121,18 +121,18 @@ export default function Sidebar({ collapsed, mobileOpen, onCollapse, onMobileClo
       </div>
 
       {/* Mobile Sidebar */}
-      <div className={`lg:hidden fixed inset-y-0 left-0 z-50 w-64 bg-gray-800 transform transition-transform duration-300 ease-in-out ${
+      <div className={`lg:hidden fixed inset-y-0 left-0 z-50 w-64 bg-black transform transition-transform duration-300 ease-in-out ${
         mobileOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="flex-1 flex flex-col min-h-0">
           <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
             <div className="flex items-center flex-shrink-0 px-4">
-              <div className="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
                 <Bot className="w-5 h-5 text-white" />
               </div>
               <div className="ml-3">
                 <p className="text-sm font-medium text-white">{session?.user?.name}'s Workspace</p>
-                <p className="text-xs text-gray-400">Community</p>
+                <p className="text-xs text-gray-400">Free Plan</p>
               </div>
             </div>
             
@@ -143,8 +143,8 @@ export default function Sidebar({ collapsed, mobileOpen, onCollapse, onMobileClo
                   onClick={() => handleNavClick(item.href)}
                   className={`w-full group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                     isActive(item.href)
-                      ? 'bg-gray-700 text-white'
-                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                      ? 'bg-purple-600 text-white'
+                      : 'text-gray-300 hover:bg-gray-900 hover:text-white'
                   }`}
                 >
                   <item.icon className="mr-3 flex-shrink-0 h-5 w-5" />
@@ -154,15 +154,15 @@ export default function Sidebar({ collapsed, mobileOpen, onCollapse, onMobileClo
             </nav>
             
             {aiSpendStat && (
-              <div className="mt-auto px-4 py-4 border-t border-gray-700">
+              <div className="mt-auto px-4 py-4 border-t border-gray-800">
                 <div className="flex items-center">
-                  <Sparkles className="w-4 h-4 text-teal-400 mr-2" />
+                  <Sparkles className="w-4 h-4 text-purple-400 mr-2" />
                   <span className="text-sm text-gray-300">AI Spend</span>
                 </div>
                 <div className="mt-2">
-                  <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-gray-800 rounded-full h-2">
                     <div 
-                      className="bg-teal-500 h-2 rounded-full transition-all duration-500" 
+                      className="bg-purple-500 h-2 rounded-full transition-all duration-500" 
                       style={{ width: `${aiSpendStat.percentage}%` }}
                     ></div>
                   </div>

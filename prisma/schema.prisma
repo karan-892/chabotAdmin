@@ -28,14 +28,22 @@ model Bot {
   avatar             String?        @db.VarChar(500)
   status             BotStatus      @default(DRAFT)
   isPublic           Boolean        @default(false)
+  
+  // Botpress-like configuration
   config             Json           @default("{}")
-  flows              Json           @default("[]")
-  intents            Json           @default("[]")
-  entities           Json           @default("[]")
+  knowledgeBase      Json           @default("[]")
+  variables          Json           @default("{}")
+  integrations       Json           @default("[]")
+  
+  // Deployment info
   deploymentUrl      String?        @db.VarChar(500)
   apiKey             String?        @db.VarChar(255)
+  
+  // Analytics
   totalConversations Int            @default(0)
   totalMessages      Int            @default(0)
+  
+  // Relations
   userId             String         @db.Uuid
   createdAt          DateTime       @default(now()) @db.Timestamp(6)
   updatedAt          DateTime       @updatedAt @db.Timestamp(6)

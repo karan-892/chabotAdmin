@@ -1,70 +1,36 @@
-export interface BotType {
+export interface BotTemplate {
   id: string;
   name: string;
   description: string;
   icon: string;
+  category: 'customer-service' | 'sales' | 'hr' | 'marketing' | 'custom';
   features: string[];
-  useCases: string[];
+  config: {
+    welcomeMessage: string;
+    fallbackMessage: string;
+    personality: string;
+  };
 }
 
-export interface WebsiteData {
-  url: string;
-  title?: string;
-  description?: string;
-  content?: string;
-  status: 'pending' | 'processing' | 'completed' | 'error';
-  lastCrawled?: Date;
-}
-
-export interface ChatbotTheme {
+export interface KnowledgeBaseItem {
   id: string;
-  name: string;
-  description: string;
-  preview: string;
-  colors: {
-    primary: string;
-    secondary: string;
-    background: string;
-    text: string;
-    accent: string;
-  };
-  style: 'modern' | 'classic' | 'minimal' | 'corporate' | 'playful';
-  features: string[];
+  type: 'url' | 'text' | 'file';
+  content: string;
+  title?: string;
+  status: 'pending' | 'processing' | 'completed' | 'error';
 }
 
-export interface EnhancedBotFormData {
-  // Step 1: Bot Type
-  botType: string;
+export interface SimpleBotFormData {
+  // Basic Info
   name: string;
   description: string;
+  template: string;
   
-  // Step 2: Website Integration
-  websites: WebsiteData[];
-  crawlDepth: number;
-  includeFiles: boolean;
+  // Knowledge Base (optional)
+  knowledgeBase: KnowledgeBaseItem[];
   
-  // Step 3: Conversation Setup
+  // Simple Configuration
   welcomeMessage: string;
-  fallbackMessage: string;
+  personality: 'professional' | 'friendly' | 'helpful';
   language: string;
-  personality: 'professional' | 'friendly' | 'casual' | 'formal';
-  
-  // Step 4: Design & Theme
-  theme: ChatbotTheme;
-  customizations: {
-    logo?: string;
-    brandColors?: {
-      primary: string;
-      secondary: string;
-    };
-    fontFamily: string;
-    borderRadius: 'none' | 'small' | 'medium' | 'large';
-    position: 'bottom-right' | 'bottom-left' | 'center';
-  };
-  
-  // Step 5: Advanced Settings
-  isPublic: boolean;
-  tags: string[];
-  integrations: string[];
-  analytics: boolean;
 }

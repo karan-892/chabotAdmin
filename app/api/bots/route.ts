@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, description, avatar, config, isPublic } = body;
+    const { name, description, avatar, config, isPublic, knowledgeBase } = body;
 
     if (!name) {
       return NextResponse.json({ error: 'Bot name is required' }, { status: 400 });
@@ -65,46 +65,15 @@ export async function POST(request: NextRequest) {
         userId: session.user.id,
         apiKey,
         config: config || {
-          welcomeMessage: "Hello! How can I help you today?",
-          fallbackMessage: "I'm sorry, I didn't understand that. Could you please rephrase?",
-          theme: {
-            primaryColor: "#0ea5e9",
-            fontFamily: "Inter",
-          },
-          language: "en",
-          category: "general",
-          tags: [],
+          template: config?.template || 'blank',
+          welcomeMessage: config?.welcomeMessage || "Hello! How can I help you today?",
+          fallbackMessage: config?.fallbackMessage || "I'm sorry, I didn't understand that. Could you please rephrase?",
+          personality: config?.personality || 'friendly',
+          language: config?.language || "en",
         },
-        flows: [
-          {
-            id: 'main',
-            name: 'Main Flow',
-            nodes: [
-              {
-                id: 'start',
-                type: 'start',
-                position: { x: 100, y: 100 },
-                data: { label: 'Start' }
-              },
-              {
-                id: 'welcome',
-                type: 'text',
-                position: { x: 300, y: 100 },
-                data: { 
-                  label: 'Welcome Message',
-                  text: 'Hello! How can I help you today?'
-                }
-              }
-            ],
-            edges: [
-              {
-                id: 'start-welcome',
-                source: 'start',
-                target: 'welcome'
-              }
-            ]
-          }
-        ],
+        knowledgeBase: knowledgeBase || [],
+        variables: {},
+        integrations: [],
       },
     });
 

@@ -28,23 +28,16 @@ model Bot {
   avatar             String?        @db.VarChar(500)
   status             BotStatus      @default(DRAFT)
   isPublic           Boolean        @default(false)
-  
-  // Botpress-like configuration
   config             Json           @default("{}")
-  knowledgeBase      Json           @default("[]")
-  variables          Json           @default("{}")
-  integrations       Json           @default("[]")
-  
-  // Deployment info
+  flows              Json           @default("[]")
+  intents            Json           @default("[]")
+  entities           Json           @default("[]")
   deploymentUrl      String?        @db.VarChar(500)
   apiKey             String?        @db.VarChar(255)
-  
-  // Analytics
   totalConversations Int            @default(0)
   totalMessages      Int            @default(0)
-  
-  // Relations
   userId             String         @db.Uuid
+  knowledgeBase      KnowledgeBase[]
   createdAt          DateTime       @default(now()) @db.Timestamp(6)
   updatedAt          DateTime       @updatedAt @db.Timestamp(6)
   analytics          BotAnalytics[]
@@ -52,6 +45,18 @@ model Bot {
   conversations      Conversation[]
 
   @@map("bots")
+}
+model KnowledgeBase {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  botId     String   @db.Uuid
+  title     String   @db.VarChar(255)
+  content   String   @db.Text
+  metadata  Json?    @default("{}")
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt @db.Timestamp(6)
+  bot       Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
+
+  @@map("knowledge_base")
 }
 
 model Conversation {

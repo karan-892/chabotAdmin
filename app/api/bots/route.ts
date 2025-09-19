@@ -57,25 +57,27 @@ export async function POST(request: NextRequest) {
     const apiKey = `bp_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
 
     const bot = await prisma.bot.create({
-      data: {
-        name,
-        description: description || '',
-        avatar: avatar || '',
-        isPublic: isPublic || false,
-        userId: session.user.id,
-        apiKey,
-        config: config || {
-          template: config?.template || 'blank',
-          welcomeMessage: config?.welcomeMessage || "Hello! How can I help you today?",
-          fallbackMessage: config?.fallbackMessage || "I'm sorry, I didn't understand that. Could you please rephrase?",
-          personality: config?.personality || 'friendly',
-          language: config?.language || "en",
+  data: {
+    name,
+    description: description || '',
+    avatar: avatar || '',
+    isPublic: isPublic || false,
+    userId: session.user.id,
+    apiKey,
+    config: config ,
+    knowledgeBase: {
+      create: knowledgeBase?.map((kb: any) => ({
+        title: kb.title || kb.type || "Untitled",
+        content: kb.content,
+        metadata: {
+          status: kb.status,
+          type: kb.type,
         },
-        knowledgeBase: knowledgeBase || [],
-        variables: {},
-        integrations: [],
-      },
-    });
+      })) || [],
+    },
+  },
+});
+
 
     return NextResponse.json({ bot }, { status: 201 });
   } catch (error) {

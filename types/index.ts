@@ -35,3 +35,30 @@ export interface User {
   workspace: string;
   emailVerified: boolean;
 }
+
+export interface BotFormData {
+  name: string;
+  description: string;
+  avatar: string;
+  category: string;
+  language: string;
+  welcomeMessage: string;
+  fallbackMessage: string;
+  primaryColor: string;
+  fontFamily: string;
+  isPublic: boolean;
+  tags: string[];
+}
+export interface BotData {
+  id: string;
+  name: string;
+  description: string;
+  avatar: string;
+  status: string;
+  config: any;
+  flows: any[];
+  deploymentUrl?: string;
+  apiKey: string;
+  totalMessages: number;
+  totalConversations: number;
+}

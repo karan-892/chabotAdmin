@@ -12,12 +12,21 @@ export async function GET(
     const bot = await prisma.bot.findUnique({
       where: { id: params.botId },
     });
+    console.log(bot)
 
     if (!bot || bot.status !== 'DEPLOYED') {
       return new NextResponse('Bot not found or not deployed', { status: 404 });
     }
 
-    const config = bot.config || {};
+    // Parse config if it's a string
+    let config: any = bot.config || {};
+    if (typeof config === "string") {
+      try {
+        config = JSON.parse(config);
+      } catch {
+        config = {};
+      }
+    }
     const theme = config.theme || {};
 
     const widgetScript = `

@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, description, avatar } = body;
+    const { name, description, avatar, config, isPublic } = body;
 
     if (!name) {
       return NextResponse.json({ error: 'Bot name is required' }, { status: 400 });
@@ -61,15 +61,19 @@ export async function POST(request: NextRequest) {
         name,
         description: description || '',
         avatar: avatar || '',
+        isPublic: isPublic || false,
         userId: session.user.id,
         apiKey,
-        config: {
+        config: config || {
           welcomeMessage: "Hello! How can I help you today?",
           fallbackMessage: "I'm sorry, I didn't understand that. Could you please rephrase?",
           theme: {
             primaryColor: "#0ea5e9",
             fontFamily: "Inter",
           },
+          language: "en",
+          category: "general",
+          tags: [],
         },
         flows: [
           {

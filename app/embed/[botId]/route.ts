@@ -17,7 +17,15 @@ export async function GET(
       return new NextResponse('Bot not found or not deployed', { status: 404 });
     }
 
-    const config = bot.config || {};
+    // Parse config if it's a string
+    let config: any = bot.config || {};
+    if (typeof config === "string") {
+      try {
+        config = JSON.parse(config);
+      } catch {
+        config = {};
+      }
+    }
     const theme = config.theme || {};
 
     const html = `

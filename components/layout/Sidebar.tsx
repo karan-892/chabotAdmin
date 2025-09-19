@@ -26,7 +26,7 @@ interface SidebarProps {
 const navigation = [
   { name: 'Home', icon: Home, current: true, href: '/' },
   { name: 'Integrations', icon: Zap, current: false, href: '/integrations' },
-  { name: 'Usage', icon: BarChart3, current: false, href: '/usage' },
+  // { name: 'Usage', icon: BarChart3, current: false, href: '/usage' },
   // { name: 'Billing', icon: CreditCard, current: false, href: '/billing' },
   { name: 'Settings', icon: Settings, current: false, href: '/settings' },
 ];

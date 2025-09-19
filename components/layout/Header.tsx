@@ -19,7 +19,7 @@ interface HeaderProps {
 }
 
 export default function Header({ onMobileMenuToggle, sidebarCollapsed }: HeaderProps) {
-  const [notifications, setNotifications] = useState(3);
+  const [notifications, setNotifications] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false);
   const {data:session}=useSession();
   const [showAuthModal, setShowAuthModal] = useState(false);

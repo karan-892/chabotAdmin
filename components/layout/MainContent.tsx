@@ -6,6 +6,9 @@ import BotCard from '@/components/ui/BotCard';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useSession } from 'next-auth/react';
 import { Avatar, AvatarFallback, AvatarImage } from '../common/components/Avatar';
+import { useRouter } from 'next/navigation';
+import { DiAptana } from "react-icons/di";
+
 
 interface MainContentProps {
   bots: Bot[];
@@ -18,23 +21,24 @@ interface MainContentProps {
   loading: boolean;
 }
 
-export default function MainContent({ 
-  bots, 
-  searchQuery, 
-  onSearchChange, 
-  onCreateBot, 
-  onDeleteBot, 
-  onDeployBot, 
+export default function MainContent({
+  bots,
+  searchQuery,
+  onSearchChange,
+  onCreateBot,
+  onDeleteBot,
+  onDeployBot,
   onLikeBot,
-  loading 
+  loading
 }: MainContentProps) {
 
-  const {data:session}=useSession();
+  const { data: session } = useSession();
 
   // const recentBots = bots.filter(bot => {
   //   const timeDiff = Date.now() - bot.deployedAt.getTime();
   //   return timeDiff < 24 * 60 * 60 * 1000; // Last 24 hours
   // });
+  const router = useRouter();
 
   if (loading) {
     return (
@@ -43,6 +47,7 @@ export default function MainContent({
       </div>
     );
   }
+  console.log("bot data = ", bots)
 
   return (
     <div className="flex-1 overflow-y-auto bg-black">
@@ -51,26 +56,26 @@ export default function MainContent({
         <div className="mb-8">
           <div className="flex items-center space-x-4 mb-2">
             <div className=" flex items-center justify-center">
-               <Avatar className="w-20 h-20 rounded-xl">
-                      <AvatarImage
-                        src={session?.user?.image || ''}
-                        alt={session?.user?.name || 'User'}
-                      />
-                      <AvatarFallback className="bg-electric-blue text-white">
-                        {session?.user?.name
-                          ?.split(' ')
-                          .map((n) => n[0])
-                          .join('')}
-                      </AvatarFallback>
-                    </Avatar>
+              <Avatar className="w-20 h-20 rounded-xl">
+                <AvatarImage
+                  src={session?.user?.image || ''}
+                  alt={session?.user?.name || 'User'}
+                />
+                <AvatarFallback className="bg-electric-blue text-white">
+                  {session?.user?.name
+                    ?.split(' ')
+                    .map((n) => n[0])
+                    .join('')}
+                </AvatarFallback>
+              </Avatar>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">{session?.user?.name}'s Workspace</h1>
-              <p className="text-gray-400">
-                Workspace profile not set. 
-                <button className="text-blue-400 hover:text-blue-300 ml-1 underline transition-colors">
-                  To edit go to settings
-                </button>
+              <p className="text-gray-400 text-xs">
+                Workspace profile not set.
+                <p  className=' text-xs'>
+                  To edit go to <span className="text-blue-400 ml-1 cursor-pointer" onClick={() => router.push('/settings')}>settings</span>
+                </p>
               </p>
             </div>
           </div>
@@ -83,7 +88,7 @@ export default function MainContent({
               <Clock className="w-5 h-5 text-gray-400" />
               <h2 className="text-lg font-semibold text-white">Recent</h2>
             </div>
-            
+
             <div className="space-y-3">
               {bots.map((bot) => (
                 <div key={bot.id} className="bg-black rounded-lg border border-gray-700 p-4 hover:bg-gray-750 transition-colors">
@@ -108,13 +113,12 @@ export default function MainContent({
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        bot.status === 'deployed' 
-                          ? 'bg-green-900 text-green-300' 
-                          : bot.status === 'error'
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${bot.status === 'deployed'
+                        ? 'bg-green-900 text-green-300'
+                        : bot.status === 'error'
                           ? 'bg-red-900 text-red-300'
                           : 'bg-yellow-900 text-yellow-300'
-                      }`}>
+                        }`}>
                         {bot.status}
                       </span>
                     </div>
@@ -127,19 +131,6 @@ export default function MainContent({
 
         {/* Bots Section */}
         <div>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-white flex items-center">
-              <Zap className="w-5 h-5 mr-2" />
-              Bots ({bots.length})
-            </h2>
-            <button 
-              onClick={onCreateBot}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Create Bot</span>
-            </button>
-          </div>
 
           {/* Search and Filters */}
           <div className="flex flex-col  sm:flex-row gap-4 mb-6">
@@ -162,51 +153,56 @@ export default function MainContent({
           {/* Bot Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             {bots.map((bot) => (
-              <BotCard 
-                key={bot.id} 
-                bot={bot} 
+              <BotCard
+                key={bot.id}
+                bot={bot}
                 onDelete={onDeleteBot}
                 onDeploy={onDeployBot}
                 onLike={onLikeBot}
               />
             ))}
-            
-            {/* Create Bot Card */}
-            <div 
-              onClick={onCreateBot}
-              className="border-2 border-dashed border-gray-700 rounded-lg p-8 flex flex-col items-center justify-center hover:border-gray-600 transition-colors cursor-pointer group"
-            >
-              <Plus className="w-12 h-12 text-gray-400 mb-4 group-hover:text-gray-300 transition-colors" />
-              <span className="text-gray-400 font-medium group-hover:text-gray-300 transition-colors">Create Bot</span>
-            </div>
-          </div>
 
-          {/* Empty State */}
-          {bots.length === 0 && (
-            <div className="text-center py-12">
-              <Zap className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-gray-400 mb-2">No bots yet</h3>
-              <p className="text-gray-500 mb-6">Create your first AI bot to get started</p>
-              <button 
+            {/* Create Bot Card */}
+            {bots.length > 0 && (
+              <div
                 onClick={onCreateBot}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 mx-auto transition-colors"
+                className="border-2 border-dashed border-gray-700 rounded-lg p-8 flex items-center justify-center gap-2 hover:border-blue-500 transition-colors cursor-pointer group"
               >
-                <Plus className="w-5 h-5" />
-                <span>Create Your First Bot</span>
-              </button>
+                <Plus className="w-3 h-3 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                <span className="text-gray-400 font-sm text-xs group-hover:text-blue-500 transition-colors">Create Bot</span>
+              </div>
+            )}
+
+          </div>
+          {bots.length === 0 && (
+            <div>
+              <div className='w-full h-[300px] rounded-xl border flex items-center justify-center '>
+                <div className='text-center items-center flex flex-col gap-5'>
+                  <DiAptana className='text-7xl text-green-500' />
+                  <h1 className='font-bold text-xl'>Workspace has no bots</h1>
+                  <p className='text-gray-500 text-sm'>Your workspace has no bots. Get started by creating a new bot</p>
+                  <button
+                    onClick={onCreateBot}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center space-x-2 mx-auto transition-colors"
+                  >
+                    <Plus className="w-5 h-5" />
+                    <span>Create Bot</span>
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
           {/* No Search Results */}
-          {bots.length > 0 && searchQuery && bots.filter(bot => 
+          {bots.length > 0 && searchQuery && bots.filter(bot =>
             bot.name.toLowerCase().includes(searchQuery.toLowerCase())
           ).length === 0 && (
-            <div className="text-center py-12">
-              <Search className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-gray-400 mb-2">No bots found</h3>
-              <p className="text-gray-500">Try adjusting your search terms</p>
-            </div>
-          )}
+              <div className="text-center py-12">
+                <Search className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                <h3 className="text-xl font-medium text-gray-400 mb-2">No bots found</h3>
+                <p className="text-gray-500">Try adjusting your search terms</p>
+              </div>
+            )}
         </div>
       </div>
     </div>

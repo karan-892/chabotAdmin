@@ -1,0 +1,231 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, ArrowRight, Bot, CheckCircle, FileText, Settings, Sparkles } from "lucide-react";
+import { Button } from "@/components/common/components/Button";
+import BotTypeStep from "./steps/BotTypeStep";
+import KnowledgeStep from "./steps/KnowledgeStep";
+import ConfigurationStep from "./steps/ConfigurationStep";
+import ReviewStep from "./steps/ReviewStep";
+
+export interface BotFormData {
+  // Basic Info
+  name: string;
+  description: string;
+  botType: string;
+  
+  // Knowledge Base
+  knowledgeBase: Array<{
+    id: string;
+    type: 'url' | 'text' | 'file';
+    content: string;
+    title?: string;
+    status: 'pending' | 'processing' | 'completed' | 'error';
+  }>;
+  
+  // Configuration
+  welcomeMessage: string;
+  fallbackMessage: string;
+  personality: 'professional' | 'friendly' | 'helpful';
+  language: string;
+  
+  // Advanced
+  isPublic: boolean;
+  tags: string[];
+}
+
+const initialFormData: BotFormData = {
+  name: "",
+  description: "",
+  botType: "",
+  knowledgeBase: [],
+  welcomeMessage: "Hello! How can I help you today?",
+  fallbackMessage: "I'm sorry, I didn't understand that. Could you please rephrase?",
+  personality: "friendly",
+  language: "en",
+  isPublic: false,
+  tags: [],
+};
+
+const steps = [
+  { id: 1, name: "Bot Type", description: "Choose your bot's purpose",icon:<Bot/> },
+  { id: 2, name: "Knowledge", description: "Add training data",icon:<FileText/> },
+  { id: 3, name: "Configuration", description: "Set up behavior",icon:<Settings/> },
+  { id: 4, name: "Review", description: "Review and create", icon:<CheckCircle/>},
+];
+
+export default function CreateBotWizard() {
+  const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState<BotFormData>(initialFormData);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const updateFormData = (field: keyof BotFormData, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const validateStep = (step: number): boolean => {
+    switch (step) {
+      case 1:
+        return !!(formData.botType && formData.name.trim());
+      case 2:
+        return true; // Knowledge base is optional
+      case 3:
+        return !!(formData.welcomeMessage.trim() && formData.fallbackMessage.trim());
+      case 4:
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  const handleNext = () => {
+    if (validateStep(currentStep) && currentStep < steps.length) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!validateStep(currentStep)) return;
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/bots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          description: formData.description,
+          config: {
+            botType: formData.botType,
+            welcomeMessage: formData.welcomeMessage,
+            fallbackMessage: formData.fallbackMessage,
+            personality: formData.personality,
+            language: "en",
+            tags: formData.tags,
+          },
+          isPublic: formData.isPublic,
+          knowledgeBase: formData.knowledgeBase,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        router.push(`/bots/${data.bot.id}`);
+      } else {
+        setError(data.error || "Failed to create bot");
+      }
+    } catch {
+      setError("An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return <BotTypeStep formData={formData} updateFormData={updateFormData} />;
+      case 2:
+        return <KnowledgeStep formData={formData} updateFormData={updateFormData} />;
+      case 3:
+        return <ConfigurationStep formData={formData} updateFormData={updateFormData} />;
+      case 4:
+        return <ReviewStep formData={formData} />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="h-full bg-black flex flex-col items-center gap-6 py-3">
+
+      {/* Progress Bar */}
+      <div className="md:border w-[15%] md:border-zinc-800 rounded-full">
+        <div className="p-4">
+          <div className="flex items-center justify-center space-x-4">
+            {steps.map((step, index) => (
+              <div key={step.id} className="flex items-center">
+                  <div
+                    className={`w-8 h-8 p-2 rounded-full flex items-center justify-center  ${
+                      step.id === currentStep
+                        ? "bg-blue-600 text-white"
+                        : step.id < currentStep
+                        ? "bg-blue-600 text-white"
+                        : "bg-zinc-700 text-zinc-400"
+                    }`}
+                  >
+                    {step.id < currentStep ? "✓" : step.icon}
+                  </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>  
+
+      {/* Content */}
+      <div className="max-w-4xl mx-auto px-6 py-3">
+        {renderStep()}
+
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-900/20 border border-red-700 rounded-lg p-4 mb-6">
+            <p className="text-red-300 text-sm">{error}</p>
+          </div>
+        )}
+
+        {/* Navigation */}
+        <div className="flex items-center justify-between mt-8 pt-6 border-t border-zinc-700">
+          <Button
+            variant="outline"
+            onClick={handlePrev}
+            disabled={currentStep === 1}
+            className="border-zinc-600 text-zinc-300 hover:text-white"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Previous
+          </Button>
+
+          {currentStep < steps.length ? (
+            <Button
+              onClick={handleNext}
+              disabled={!validateStep(currentStep)}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Next
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleSubmit}
+              disabled={loading || !validateStep(currentStep)}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Create Bot
+                </>
+              )}
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,100 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String         @db.VarChar(255)
+  email         String         @unique @db.VarChar(255)
+  image         String?
+  createdAt     DateTime?      @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime?      @updatedAt @db.Timestamp(6)
+  bots          Bot[]
+  conversations Conversation[]
+
+  @@map("users")
+}
+
+model Bot {
+  id                 String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String          @db.VarChar(255)
+  description        String?
+  avatar             String?         @db.VarChar(500)
+  status             BotStatus       @default(DRAFT)
+  isPublic           Boolean         @default(false)
+  config             Json            @default("{}")
+  flows              Json            @default("[]")
+  intents            Json            @default("[]")
+  entities           Json            @default("[]")
+  deploymentUrl      String?         @db.VarChar(500)
+  apiKey             String?         @db.VarChar(255)
+  totalConversations Int             @default(0)
+  totalMessages      Int             @default(0)
+  userId             String          @db.Uuid
+  createdAt          DateTime        @default(now()) @db.Timestamp(6)
+  updatedAt          DateTime        @updatedAt @db.Timestamp(6)
+  analytics          BotAnalytics[]
+  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversations      Conversation[]
+  knowledgeBase      KnowledgeBase[]
+
+  @@map("bots")
+}
+
+model KnowledgeBase {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  botId     String   @db.Uuid
+  title     String   @db.VarChar(255)
+  content   String
+  metadata  Json?    @default("{}")
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt @db.Timestamp(6)
+  bot       Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
+
+  @@map("knowledge_base")
+}
+
+model Conversation {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sessionId String   @db.VarChar(255)
+  userId    String?  @db.Uuid
+  botId     String   @db.Uuid
+  messages  Json     @default("[]")
+  context   Json     @default("{}")
+  metadata  Json     @default("{}")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt @db.Timestamp(6)
+  bot       Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([botId, sessionId])
+  @@map("conversations")
+}
+
+model BotAnalytics {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  botId         String   @db.Uuid
+  date          DateTime @db.Date
+  conversations Int      @default(0)
+  messages      Int      @default(0)
+  uniqueUsers   Int      @default(0)
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  bot           Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
+
+  @@unique([botId, date])
+  @@map("bot_analytics")
+}
+
+enum BotStatus {
+  DRAFT
+  PUBLISHED
+  DEPLOYED
+  ARCHIVED
+}

@@ -6,7 +6,7 @@ import { ArrowLeft, ArrowRight, Bot, CheckCircle, FileText, Settings, Sparkles }
 import { Button } from "@/components/common/components/Button";
 import BotTypeStep from "./steps/BotTypeStep";
 import KnowledgeStep from "./steps/KnowledgeStep";
-import ConfigurationStep from "./steps/ConfigurationStep";
+import ThemeStep from "./steps/ThemeStep";
 import ReviewStep from "./steps/ReviewStep";
 
 export interface BotFormData {
@@ -18,17 +18,29 @@ export interface BotFormData {
   // Knowledge Base
   knowledgeBase: Array<{
     id: string;
-    type: 'url' | 'text' | 'file';
+    type: 'url' | 'text' | 'file' | 'pdf' | 'docx' | 'txt' | 'csv' | 'json';
     content: string;
     title?: string;
-    status: 'pending' | 'processing' | 'completed' | 'error';
+    status: 'pending' | 'processing' | 'completed' | 'failed' | 'indexed';
+    file?: File;
+    fileSize?: number;
+    mimeType?: string;
   }>;
   
-  // Configuration
-  welcomeMessage: string;
-  fallbackMessage: string;
-  personality: 'professional' | 'friendly' | 'helpful';
-  language: string;
+  // Theme Configuration
+  theme: {
+    primaryColor: string;
+    secondaryColor: string;
+    backgroundColor: string;
+    textColor: string;
+    fontFamily: string;
+    fontSize: string;
+    borderRadius: string;
+    chatPosition: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
+    chatWidth: string;
+    chatHeight: string;
+    customCSS?: string;
+  };
   
   // Advanced
   isPublic: boolean;
@@ -40,10 +52,19 @@ const initialFormData: BotFormData = {
   description: "",
   botType: "",
   knowledgeBase: [],
-  welcomeMessage: "Hello! How can I help you today?",
-  fallbackMessage: "I'm sorry, I didn't understand that. Could you please rephrase?",
-  personality: "friendly",
-  language: "en",
+  theme: {
+    primaryColor: "#0ea5e9",
+    secondaryColor: "#64748b",
+    backgroundColor: "#ffffff",
+    textColor: "#1e293b",
+    fontFamily: "Inter",
+    fontSize: "14px",
+    borderRadius: "8px",
+    chatPosition: "bottom-right",
+    chatWidth: "400px",
+    chatHeight: "600px",
+    customCSS: "",
+  },
   isPublic: false,
   tags: [],
 };
@@ -51,7 +72,7 @@ const initialFormData: BotFormData = {
 const steps = [
   { id: 1, name: "Bot Type", description: "Choose your bot's purpose",icon:<Bot/> },
   { id: 2, name: "Knowledge", description: "Add training data",icon:<FileText/> },
-  { id: 3, name: "Configuration", description: "Set up behavior",icon:<Settings/> },
+  { id: 3, name: "Theme", description: "Customize appearance",icon:<Settings/> },
   { id: 4, name: "Review", description: "Review and create", icon:<CheckCircle/>},
 ];
 
@@ -73,7 +94,7 @@ export default function CreateBotWizard() {
       case 2:
         return true; // Knowledge base is optional
       case 3:
-        return !!(formData.welcomeMessage.trim() && formData.fallbackMessage.trim());
+        return !!(formData.theme.primaryColor && formData.theme.backgroundColor);
       case 4:
         return true;
       default:
@@ -108,12 +129,9 @@ export default function CreateBotWizard() {
           description: formData.description,
           config: {
             botType: formData.botType,
-            welcomeMessage: formData.welcomeMessage,
-            fallbackMessage: formData.fallbackMessage,
-            personality: formData.personality,
-            language: "en",
             tags: formData.tags,
           },
+          theme: formData.theme,
           isPublic: formData.isPublic,
           knowledgeBase: formData.knowledgeBase,
         }),
@@ -139,7 +157,7 @@ export default function CreateBotWizard() {
       case 2:
         return <KnowledgeStep formData={formData} updateFormData={updateFormData} />;
       case 3:
-        return <ConfigurationStep formData={formData} updateFormData={updateFormData} />;
+        return <ThemeStep formData={formData} updateFormData={updateFormData} />;
       case 4:
         return <ReviewStep formData={formData} />;
       default:

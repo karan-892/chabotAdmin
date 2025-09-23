@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, description, avatar, config, isPublic, knowledgeBase } = body;
+    const { name, description, avatar, config, theme, isPublic, knowledgeBase } = body;
 
     if (!name) {
       return NextResponse.json({ error: 'Bot name is required' }, { status: 400 });
@@ -65,16 +65,42 @@ export async function POST(request: NextRequest) {
     userId: session.user.id,
     apiKey,
     config: config ,
+    theme: theme ? {
+      create: {
+        primaryColor: theme.primaryColor || '#0ea5e9',
+        secondaryColor: theme.secondaryColor || '#64748b',
+        backgroundColor: theme.backgroundColor || '#ffffff',
+        textColor: theme.textColor || '#1e293b',
+        fontFamily: theme.fontFamily || 'Inter',
+        fontSize: theme.fontSize || '14px',
+        borderRadius: theme.borderRadius || '8px',
+        chatPosition: theme.chatPosition || 'bottom-right',
+        chatWidth: theme.chatWidth || '400px',
+        chatHeight: theme.chatHeight || '600px',
+        customCSS: theme.customCSS || '',
+      }
+    } : undefined,
     knowledgeBase: {
       create: knowledgeBase?.map((kb: any) => ({
         title: kb.title || kb.type || "Untitled",
         content: kb.content,
+        type: kb.type?.toUpperCase() || 'TEXT',
+        sourceUrl: kb.type === 'url' ? kb.content : null,
+        filePath: kb.file ? `/uploads/${kb.file.name}` : null,
+        fileSize: kb.fileSize || null,
+        mimeType: kb.mimeType || null,
+        status: 'PENDING',
         metadata: {
-          status: kb.status,
+          status: kb.status || 'pending',
           type: kb.type,
+          originalName: kb.file?.name,
         },
       })) || [],
     },
+  },
+  include: {
+    theme: true,
+    knowledgeBase: true,
   },
 });
 

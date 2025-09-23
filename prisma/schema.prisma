@@ -43,19 +43,52 @@ model Bot {
   user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   conversations      Conversation[]
   knowledgeBase      KnowledgeBase[]
+  theme              BotTheme?
 
   @@map("bots")
 }
 
+model BotTheme {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  botId           String   @unique @db.Uuid
+  primaryColor    String   @default("#0ea5e9") @db.VarChar(7)
+  secondaryColor  String   @default("#64748b") @db.VarChar(7)
+  backgroundColor String   @default("#ffffff") @db.VarChar(7)
+  textColor       String   @default("#1e293b") @db.VarChar(7)
+  fontFamily      String   @default("Inter") @db.VarChar(100)
+  fontSize        String   @default("14px") @db.VarChar(10)
+  borderRadius    String   @default("8px") @db.VarChar(10)
+  chatPosition    String   @default("bottom-right") @db.VarChar(20)
+  chatWidth       String   @default("400px") @db.VarChar(10)
+  chatHeight      String   @default("600px") @db.VarChar(10)
+  headerStyle     Json     @default("{}")
+  messageStyle    Json     @default("{}")
+  inputStyle      Json     @default("{}")
+  customCSS       String?  @db.Text
+  createdAt       DateTime @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime @updatedAt @db.Timestamp(6)
+  bot             Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
+
+  @@map("bot_themes")
+}
+
 model KnowledgeBase {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  botId     String   @db.Uuid
-  title     String   @db.VarChar(255)
-  content   String
-  metadata  Json?    @default("{}")
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  updatedAt DateTime @updatedAt @db.Timestamp(6)
-  bot       Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  botId       String            @db.Uuid
+  title       String            @db.VarChar(255)
+  content     String            @db.Text
+  type        KnowledgeType
+  sourceUrl   String?           @db.VarChar(500)
+  filePath    String?           @db.VarChar(500)
+  fileSize    Int?
+  mimeType    String?           @db.VarChar(100)
+  status      ProcessingStatus  @default(PENDING)
+  metadata    Json?             @default("{}")
+  vectorData  String?           @db.Text
+  chunks      Json?             @default("[]")
+  createdAt   DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime          @updatedAt @db.Timestamp(6)
+  bot         Bot               @relation(fields: [botId], references: [id], onDelete: Cascade)
 
   @@map("knowledge_base")
 }
@@ -97,4 +130,23 @@ enum BotStatus {
   PUBLISHED
   DEPLOYED
   ARCHIVED
+}
+
+enum KnowledgeType {
+  URL
+  TEXT
+  FILE
+  PDF
+  DOCX
+  TXT
+  CSV
+  JSON
+}
+
+enum ProcessingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  INDEXED
 }

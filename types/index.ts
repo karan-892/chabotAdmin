@@ -20,12 +20,16 @@ export interface Bot {
 
 export interface KnowledgeBaseItem {
   id: string;
-  type: 'url' | 'text';
+  type: 'url' | 'text' | 'file' | 'pdf' | 'docx' | 'txt' | 'csv' | 'json';
   content: string;
-  status: 'pending' | 'processing' | 'ready' | 'error';
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'indexed';
+  sourceUrl?: string;
+  filePath?: string;
+  fileSize?: number;
+  mimeType?: string;
   metadata?: {
     title?: string;
-    sourceUrl?: string;
+    originalName?: string;
     [key: string]: any;
   };
   createdAt: Date;
@@ -74,6 +78,27 @@ export interface BotFormData {
   tags: string[];
 }
 export interface BotData {
+export interface BotTheme {
+  id: string;
+  botId: string;
+  primaryColor: string;
+  secondaryColor: string;
+  backgroundColor: string;
+  textColor: string;
+  fontFamily: string;
+  fontSize: string;
+  borderRadius: string;
+  chatPosition: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
+  chatWidth: string;
+  chatHeight: string;
+  headerStyle: any;
+  messageStyle: any;
+  inputStyle: any;
+  customCSS?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
   id: string;
   name: string;
   description: string;
@@ -85,4 +110,5 @@ export interface BotData {
   apiKey: string;
   totalMessages: number;
   totalConversations: number;
+  theme?: BotTheme;
 }

@@ -106,26 +106,37 @@ export default function ReviewStep({ formData }: Props) {
         </div>
 
         {/* Configuration */}
+        {/* Theme Configuration */}
         <div className="bg-zinc-800/50 rounded-lg p-6">
           <div className="flex items-center space-x-2 mb-4">
-            <Settings className="w-5 h-5 text-green-400" />
-            <h3 className="text-lg font-semibold text-white">Configuration</h3>
+            <Settings className="w-5 h-5 text-purple-400" />
+            <h3 className="text-lg font-semibold text-white">Theme & Settings</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* <div>
-              <label className="text-sm text-zinc-400">Language</label>
-              <p className="text-white font-medium">{getLanguageName(formData.language)}</p>
-            </div> */}
             <div>
-              <label className="text-sm text-zinc-400">Personality</label>
-              <p className="text-white font-medium">{getPersonalityName(formData.personality)}</p>
+              <label className="text-sm text-zinc-400">Primary Color</label>
+              <div className="flex items-center space-x-2 mt-1">
+                <div 
+                  className="w-4 h-4 rounded"
+                  style={{ backgroundColor: formData.theme.primaryColor }}
+                ></div>
+                <p className="text-white font-medium">{formData.theme.primaryColor}</p>
+              </div>
+            </div>
+            <div>
+              <label className="text-sm text-zinc-400">Font Family</label>
+              <p className="text-white font-medium">{formData.theme.fontFamily}</p>
+            </div>
+            <div>
+              <label className="text-sm text-zinc-400">Chat Position</label>
+              <p className="text-white font-medium capitalize">{formData.theme.chatPosition.replace('-', ' ')}</p>
             </div>
             <div>
               <label className="text-sm text-zinc-400">Visibility</label>
               <p className="text-white font-medium">{formData.isPublic ? 'Public' : 'Private'}</p>
             </div>
             {formData.tags.length > 0 && (
-              <div>
+              <div className="md:col-span-2">
                 <label className="text-sm text-zinc-400">Tags</label>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {formData.tags.map((tag, index) => (
@@ -142,43 +153,33 @@ export default function ReviewStep({ formData }: Props) {
           </div>
         </div>
 
-        {/* Messages */}
-        <div className="bg-zinc-800/50 rounded-lg p-6">
-          <div className="flex items-center space-x-2 mb-4">
-            <MessageSquare className="w-5 h-5 text-yellow-400" />
-            <h3 className="text-lg font-semibold text-white">Messages</h3>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm text-zinc-400">Welcome Message</label>
-              <div className="bg-black rounded-lg p-3 mt-1">
-                <p className="text-white text-sm">{formData.welcomeMessage}</p>
-              </div>
-            </div>
-            <div>
-              <label className="text-sm text-zinc-400">Fallback Message</label>
-              <div className="bg-black rounded-lg p-3 mt-1">
-                <p className="text-white text-sm">{formData.fallbackMessage}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Preview */}
         <div className="bg-gradient-to-r from-blue-900/20 to-blue-900/20 rounded-lg p-6 border border-blue-500/20">
           <h3 className="text-lg font-semibold text-white mb-4">Chat Preview</h3>
           <div className="bg-white rounded-lg p-4 max-w-sm mx-auto">
-            <div className="flex items-center space-x-2 mb-3">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+            <div 
+              className="flex items-center space-x-2 mb-3 p-3 rounded-t-lg"
+              style={{ backgroundColor: formData.theme.primaryColor }}
+            >
+              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                 <Bot className="w-4 h-4 text-white" />
               </div>
               <div>
-                <div className="text-sm font-medium text-zinc-800">{formData.name}</div>
-                <div className="text-xs text-zinc-500">Online • {getPersonalityName(formData.personality)}</div>
+                <div className="text-sm font-medium text-white">{formData.name}</div>
+                <div className="text-xs text-white/80">Online now</div>
               </div>
             </div>
-            <div className="bg-zinc-100 rounded-lg p-3">
-              <p className="text-sm text-zinc-800">{formData.welcomeMessage}</p>
+            <div className="p-3">
+              <div 
+                className="bg-zinc-100 rounded-lg p-3"
+                style={{ 
+                  fontFamily: formData.theme.fontFamily,
+                  fontSize: formData.theme.fontSize,
+                  borderRadius: formData.theme.borderRadius,
+                }}
+              >
+                <p className="text-sm text-zinc-800">Hello! I'm your AI assistant. How can I help you today?</p>
+              </div>
             </div>
           </div>
         </div>

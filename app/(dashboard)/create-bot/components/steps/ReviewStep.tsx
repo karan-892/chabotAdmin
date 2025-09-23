@@ -40,6 +40,7 @@ export default function ReviewStep({ formData }: Props) {
   //   };
   //   return languages[code] || code;
   // };
+  console.log("formdata =",formData.theme)
 
   return (
     <div className="space-y-6">
@@ -156,8 +157,13 @@ export default function ReviewStep({ formData }: Props) {
         {/* Preview */}
         <div className="bg-gradient-to-r from-blue-900/20 to-blue-900/20 rounded-lg p-6 border border-blue-500/20">
           <h3 className="text-lg font-semibold text-white mb-4">Chat Preview</h3>
-          <div className="bg-white rounded-lg p-4 max-w-sm mx-auto">
-            <div 
+          <div className=" bg-white rounded-lg p-4 max-w-sm mx-auto">
+           <div className=" rounded-lg relative"
+           style={{
+            backgroundColor:formData.theme.backgroundColor,
+           }}
+           >
+             <div 
               className="flex items-center space-x-2 mb-3 p-3 rounded-t-lg"
               style={{ backgroundColor: formData.theme.primaryColor }}
             >
@@ -169,18 +175,25 @@ export default function ReviewStep({ formData }: Props) {
                 <div className="text-xs text-white/80">Online now</div>
               </div>
             </div>
-            <div className="p-3">
+            <div className={`p-3`}
+            style={{
+            }}
+            >
               <div 
                 className="bg-zinc-100 rounded-lg p-3"
                 style={{ 
                   fontFamily: formData.theme.fontFamily,
                   fontSize: formData.theme.fontSize,
                   borderRadius: formData.theme.borderRadius,
+                  color: formData.theme.textColor,
+                  backgroundColor: formData.theme.primaryColor + "20",
+
                 }}
               >
-                <p className="text-sm text-zinc-800">Hello! I'm your AI assistant. How can I help you today?</p>
+                <p className="text-sm ">Hello! I'm your AI assistant. How can I help you today?</p>
               </div>
             </div>
+           </div>
           </div>
         </div>
       </div>

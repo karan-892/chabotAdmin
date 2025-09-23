@@ -1,14 +1,15 @@
 "use client"
 
-import { BotData } from "@/types";
+import { Bot } from "@/types";
 
 export default function SettingsTab({
   bot,
   setBot,
 }: {
-  bot: BotData;
-  setBot: (bot: BotData) => void;
+  bot: Bot;
+  setBot: (bot: Bot) => void;
 }) {
+  console.log("bot in setting tab =",bot);
   return (
     <div className="h-full p-6 overflow-y-auto">
       <div className="max-w-2xl mx-auto space-y-6">
@@ -79,7 +80,7 @@ export default function SettingsTab({
             <label className="block text-sm font-medium text-zinc-300 mb-2">Primary Color</label>
             <input
               type="color"
-              value={bot.config?.theme?.primaryColor || "#8b5cf6"}
+              value={bot.theme?.primaryColor }
               onChange={(e) =>
                 setBot({
                   ...bot,

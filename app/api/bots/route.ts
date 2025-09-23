@@ -27,6 +27,10 @@ export async function GET(request: NextRequest) {
             conversations: true,
           },
         },
+        theme: true,
+        knowledgeBase: true,
+        // Exclude sensitive fields like apiKey
+        // select: { id: true, name: true, description: true, status: true, createdAt: true, updatedAt: true
       },
     });
 

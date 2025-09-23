@@ -16,6 +16,7 @@ export interface Bot {
   knowledgeBase: KnowledgeBaseItem[];
   totalMessages: number;
   totalConversations: number;
+  theme: BotTheme;
 }
 
 export interface KnowledgeBaseItem {
@@ -77,7 +78,7 @@ export interface BotFormData {
   isPublic: boolean;
   tags: string[];
 }
-export interface BotData {
+
 export interface BotTheme {
   id: string;
   botId: string;
@@ -99,16 +100,3 @@ export interface BotTheme {
   updatedAt: Date;
 }
 
-  id: string;
-  name: string;
-  description: string;
-  avatar: string;
-  status: string;
-  config: any;
-  flows: any[];
-  deploymentUrl?: string;
-  apiKey: string;
-  totalMessages: number;
-  totalConversations: number;
-  theme?: BotTheme;
-}

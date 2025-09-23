@@ -14,7 +14,7 @@ export interface BotFormData {
   name: string;
   description: string;
   botType: string;
-  
+
   // Knowledge Base
   knowledgeBase: Array<{
     id: string;
@@ -26,7 +26,7 @@ export interface BotFormData {
     fileSize?: number;
     mimeType?: string;
   }>;
-  
+
   // Theme Configuration
   theme: {
     primaryColor: string;
@@ -41,7 +41,7 @@ export interface BotFormData {
     chatHeight: string;
     customCSS?: string;
   };
-  
+
   // Advanced
   isPublic: boolean;
   tags: string[];
@@ -70,10 +70,10 @@ const initialFormData: BotFormData = {
 };
 
 const steps = [
-  { id: 1, name: "Bot Type", description: "Choose your bot's purpose",icon:<Bot/> },
-  { id: 2, name: "Knowledge", description: "Add training data",icon:<FileText/> },
-  { id: 3, name: "Theme", description: "Customize appearance",icon:<Settings/> },
-  { id: 4, name: "Review", description: "Review and create", icon:<CheckCircle/>},
+  { id: 1, name: "Bot Type", description: "Choose your bot's purpose", icon: <Bot /> },
+  { id: 2, name: "Knowledge", description: "Add training data", icon: <FileText /> },
+  { id: 3, name: "Theme", description: "Customize appearance", icon: <Settings /> },
+  { id: 4, name: "Review", description: "Review and create", icon: <CheckCircle /> },
 ];
 
 export default function CreateBotWizard() {
@@ -115,40 +115,75 @@ export default function CreateBotWizard() {
   };
 
   const handleSubmit = async () => {
-    if (!validateStep(currentStep)) return;
+  if (!validateStep(currentStep)) return;
 
-    setLoading(true);
-    setError("");
+  setLoading(true);
+  setError("");
 
-    try {
-      const response = await fetch("/api/bots", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          description: formData.description,
-          config: {
-            botType: formData.botType,
-            tags: formData.tags,
-          },
-          theme: formData.theme,
-          isPublic: formData.isPublic,
-          knowledgeBase: formData.knowledgeBase,
-        }),
-      });
+  try {
+    const response = await fetch("/api/bots", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formData.name,
+        description: formData.description,
+        config: { botType: formData.botType, tags: formData.tags },
+        theme: formData.theme,
+        isPublic: formData.isPublic,
+        knowledgeBase: formData.knowledgeBase,
+      }),
+    });
 
-      const data = await response.json();
-      if (response.ok) {
-        router.push(`/bots/${data.bot.id}`);
-      } else {
-        setError(data.error || "Failed to create bot");
-      }
-    } catch {
-      setError("An unexpected error occurred");
-    } finally {
-      setLoading(false);
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.error || "Failed to create bot");
+      return;
     }
-  };
+
+    // === Extract IDs safely ===
+    const botId = data?.bot?.id;
+    const knowledgeBases = Array.isArray(data?.bot?.knowledgeBase)
+      ? data.bot.knowledgeBase
+      : [];
+
+    // Navigate to bot page
+    if (botId) router.push(`/bots/${botId}`);
+
+    // Optional: get current processing status for the bot
+    if (botId) {
+      const statusRes = await fetch(`/api/knowledge/process?botId=${botId}`, { method: "GET" });
+      const statusJson = await statusRes.json();
+      console.log("Processing status:", statusJson);
+    }
+
+    // Trigger processing for each knowledgeBase item (POST per item)
+    if (knowledgeBases.length > 0) {
+      await Promise.all(
+        knowledgeBases.map((kb:any) =>
+          fetch("/api/knowledge/process", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ botId, knowledgeBaseId: kb.id }),
+          }).then(res => {
+            if (!res.ok) throw new Error(`Failed to process KB ${kb.id}`);
+            return res.json();
+          })
+        )
+      );
+      console.log(`Triggered processing for ${knowledgeBases.length} KB items`);
+    } else {
+      console.log("No knowledgeBase items returned with bot creation.");
+    }
+
+  } catch (err) {
+    console.error(err);
+    setError("An unexpected error occurred");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const renderStep = () => {
     switch (currentStep) {
@@ -174,22 +209,21 @@ export default function CreateBotWizard() {
           <div className="flex items-center justify-center space-x-4">
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-center">
-                  <div
-                    className={`w-8 h-8 p-2 rounded-full flex items-center justify-center  ${
-                      step.id === currentStep
-                        ? "bg-blue-600 text-white"
-                        : step.id < currentStep
+                <div
+                  className={`w-8 h-8 p-2 rounded-full flex items-center justify-center  ${step.id === currentStep
+                      ? "bg-blue-600 text-white"
+                      : step.id < currentStep
                         ? "bg-blue-600 text-white"
                         : "bg-zinc-700 text-zinc-400"
                     }`}
-                  >
-                    {step.id < currentStep ? "✓" : step.icon}
-                  </div>
+                >
+                  {step.id < currentStep ? "✓" : step.icon}
+                </div>
               </div>
             ))}
           </div>
         </div>
-      </div>  
+      </div>
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-6 py-3">

@@ -1,9 +1,9 @@
 "use client"
 
-import { BotData } from "@/types";
+import { Bot } from "@/types";
 import { Button } from "@/components/common/components/Button";
 
-export default function DeployTab({ bot }: { bot: BotData }) {
+export default function DeployTab({ bot }: { bot: Bot }) {
   return (
     <div className="h-full p-6">
       <div className="max-w-2xl mx-auto space-y-6">

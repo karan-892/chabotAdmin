@@ -20,10 +20,6 @@ const ProfileTab = ({ session, formData, setFormData }: ProfileTabProps) => {
                 {session?.user?.name?.split(' ').map((n: string) => n[0]).join('')}
               </AvatarFallback>
             </Avatar>
-            <div>
-              <Button variant="outline" size="sm">Change Photo</Button>
-              <p className="text-xs text-zinc-400 mt-1">JPG, PNG or GIF. Max size 2MB.</p>
-            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -45,16 +41,6 @@ const ProfileTab = ({ session, formData, setFormData }: ProfileTabProps) => {
                 className="w-full px-3 py-2 bg-black border border-zinc-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">Workspace Name</label>
-            <input
-              type="text"
-              value={formData.workspace}
-              onChange={(e) => setFormData({ ...formData, workspace: e.target.value })}
-              className="w-full px-3 py-2 bg-black border border-zinc-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
           </div>
           
           <div>

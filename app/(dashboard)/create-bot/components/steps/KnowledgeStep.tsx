@@ -257,7 +257,7 @@ export default function KnowledgeStep({ formData, updateFormData }: Props) {
               onDragOver={handleDrag}
               onDrop={handleDrop}
             >
-              <Upload className="w-12 h-12 text-zinc-400 mx-auto mb-4" />
+              <Upload className="w-8 h-8 text-zinc-400 mx-auto mb-4" />
               <p className="text-white font-medium mb-2">
                 Drag and drop files here, or click to browse
               </p>
@@ -353,12 +353,12 @@ export default function KnowledgeStep({ formData, updateFormData }: Props) {
       {formData.knowledgeBase.length === 0 && (
         <div className="text-center py-12 border-2 border-dashed border-zinc-600 rounded-lg">
           <div className="flex justify-center space-x-4 mb-4">
-            <Globe className="w-8 h-8 text-zinc-500" />
-            <FileText className="w-8 h-8 text-zinc-500" />
-            <Upload className="w-8 h-8 text-zinc-500" />
+            <Globe className="w-5 h-5 text-zinc-500" />
+            <FileText className="w-5 h-5 text-zinc-500" />
+            <Upload className="w-5 h-5 text-zinc-500" />
           </div>
-          <h3 className="text-lg font-medium text-zinc-400 mb-2">No knowledge sources added</h3>
-          <p className="text-zinc-500">Add websites, upload documents, or paste text to train your bot</p>
+          <h3 className="text-sm font-medium text-zinc-400 mb-2">No knowledge sources added</h3>
+          <p className="text-zinc-500 text-xs">Add websites, upload documents, or paste text to train your bot</p>
         </div>
       )}
     </div>

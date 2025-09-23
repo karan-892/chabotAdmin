@@ -8,13 +8,13 @@ import BotTabs from "./components/BotTabs";
 import SettingsTab from "./components/SettingsTab";
 import AnalyticsTab from "./components/AnalyticsTab";
 import DeployTab from "./components/DeployTab";
-import { BotData } from "@/types";
+import { Bot } from "@/types";
 
 export default function BotEditorPage() {
   const params = useParams();
   const router = useRouter();
 
-  const [bot, setBot] = useState<BotData | null>(null);
+  const [bot, setBot] = useState<Bot | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deploying, setDeploying] = useState(false);
@@ -78,7 +78,6 @@ export default function BotEditorPage() {
   };
 
   const deleteBot = async () => {
-    if (!bot || !confirm("Are you sure you want to delete this bot?")) return;
     try {
       const response = await fetch(`/api/bots/${params.botId}`, { method: "DELETE" });
       if (response.ok) router.push("/dashboard");

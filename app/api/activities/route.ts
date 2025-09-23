@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Generate activities based on bot changes
-    const activities = userBots.map((bot, index) => {
+    const activities = userBots.map((bot:any, index:any) => {
       const timeDiff = Date.now() - new Date(bot.updatedAt).getTime();
       const minutesAgo = Math.floor(timeDiff / (1000 * 60));
       
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     // Add some recent conversation activities
     const recentConversations = await prisma.conversation.findMany({
       where: {
-        botId: { in: userBots.map(bot => bot.id) },
+        botId: { in: userBots.map((bot:any) => bot.id) },
       },
       include: {
         bot: { select: { name: true } },
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
       take: 5,
     });
 
-    const conversationActivities = recentConversations.map((conv, index) => ({
+    const conversationActivities = recentConversations.map((conv:any, index:any) => ({
       id: `conv-${conv.id}-${index}`,
       user: session.user.name?.charAt(0) || 'U',
       action: 'received message for',

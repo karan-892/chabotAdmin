@@ -38,7 +38,6 @@ export async function POST(request: NextRequest) {
     });
 
     // Here you would call your Python backend to process the content
-    // For now, we'll simulate the processing
     const pythonBackendUrl = process.env.PYTHON_BACKEND_URL || 'http://localhost:8000';
     
     try {
@@ -63,15 +62,15 @@ export async function POST(request: NextRequest) {
       if (pythonResponse.ok) {
         const result = await pythonResponse.json();
         
-        // Update knowledge base with processed data
+        // Update knowledge base with processed data in metadata
         await prisma.knowledgeBase.update({
           where: { id: knowledgeBaseId },
           data: {
-            status: 'COMPLETED',
-            vectorData: result.vectorData || null,
-            chunks: result.chunks || [],
+            status: 'READY',
             metadata: {
-              ...knowledgeItem.metadata,
+              ...(knowledgeItem.metadata as any) || {},
+              vectorData: result.vectorData || null,
+              chunks: result.chunks || [],
               processedAt: new Date().toISOString(),
               chunkCount: result.chunks?.length || 0,
               processingTime: result.processingTime || 0,
@@ -96,7 +95,7 @@ export async function POST(request: NextRequest) {
         data: { 
           status: 'FAILED',
           metadata: {
-            ...knowledgeItem.metadata,
+            ...(knowledgeItem.metadata as any) || {},
             error: 'Processing failed',
             failedAt: new Date().toISOString(),
           },
@@ -143,7 +142,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const statusCounts = knowledgeItems.reduce((acc: any, item) => {
+    const statusCounts = knowledgeItems.reduce((acc: any, item: any) => {
       acc[item.status] = (acc[item.status] || 0) + 1;
       return acc;
     }, {});

@@ -1,7 +1,7 @@
-import { BotData } from "@/types";
+import { Bot } from "@/types";
 import { BarChart3 } from "lucide-react";
 
-export default function AnalyticsTab({ bot }: { bot: BotData }) {
+export default function AnalyticsTab({ bot }: { bot: Bot }) {
   return (
     <div className="h-full p-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

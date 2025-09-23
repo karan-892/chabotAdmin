@@ -1,11 +1,13 @@
 "use client"
 
-import { Bot, Save, Play, Trash2 } from "lucide-react";
+import { Save, Play, Trash2 } from "lucide-react";
 import { Button } from "@/components/common/components/Button";
-import { BotData } from "@/types";
+import { Bot } from "@/types";
+import DeleteBotModal from "@/components/common/modals/DeleteBotModal";
+import { useState } from "react";
 
 interface Props {
-  bot: BotData;
+  bot: Bot;
   onSave: () => void;
   saving: boolean;
   onDeploy: () => void;
@@ -14,12 +16,15 @@ interface Props {
 }
 
 export default function BotHeader({ bot, onSave, saving, onDeploy, deploying, onDelete }: Props) {
+    const [ deleteModalOpen, setDeleteModalOpen ] = useState(false);
+
+
+  
   return (
     <div className="bg-black border-b border-zinc-700 px-6 py-4">
       <div className="lg:flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-            <Bot className="w-5 h-5 text-white" />
           </div>
           <div>
             <h1 className="lg:text-xl font-bold text-white">{bot.name}</h1>
@@ -37,11 +42,18 @@ export default function BotHeader({ bot, onSave, saving, onDeploy, deploying, on
             <Play className="w-4 h-4" />
             <span>{deploying ? "Deploying..." : "Deploy"}</span>
           </Button>
-          <Button variant="destructive" onClick={onDelete} className="bg-red-600 hover:bg-red-700">
+          <Button variant="destructive" onClick={()=>setDeleteModalOpen(true)} className="bg-red-600 hover:bg-red-700">
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>
       </div>
+              {
+        deleteModalOpen && <DeleteBotModal bot={bot} setShowDeleteModal={setDeleteModalOpen} confirmDelete={()=>{
+            onDelete();
+            setDeleteModalOpen(false);
+        }} />
+              }
+
     </div>
   );
 }

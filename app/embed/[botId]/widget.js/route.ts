@@ -34,7 +34,7 @@ export async function GET(
         config = {};
       }
     }
-    const theme = config.theme || {};
+    const theme = bot.theme || {};
 
     const widgetScript = `
 (function() {

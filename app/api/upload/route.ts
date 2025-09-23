@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     const uploadedFiles = [];
-    const uploadDir = join(process.cwd(), 'uploads', botId);
+    const uploadDir = join(process.cwd(), 'public', 'uploads', botId);
 
     // Create upload directory if it doesn't exist
     if (!existsSync(uploadDir)) {
@@ -49,32 +49,47 @@ export async function POST(request: NextRequest) {
         'text/plain',
         'text/csv',
         'application/json',
+        'application/msword', // .doc files
       ];
 
-      if (!allowedTypes.includes(file.type)) {
+      // Also check by file extension for safety
+      const fileExtension = file.name.split('.').pop()?.toLowerCase();
+      const allowedExtensions = ['pdf', 'doc', 'docx', 'txt', 'csv', 'json'];
+
+      if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension || '')) {
         return NextResponse.json({ 
-          error: `File type not supported: ${file.name}` 
+          error: `File type not supported: ${file.name}. Supported types: PDF, DOC, DOCX, TXT, CSV, JSON` 
         }, { status: 400 });
       }
 
       // Generate unique filename
       const timestamp = Date.now();
-      const filename = `${timestamp}-${file.name}`;
+      const safeFilename = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const filename = `${timestamp}-${safeFilename}`;
       const filepath = join(uploadDir, filename);
 
-      // Save file
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      await writeFile(filepath, buffer);
+      try {
+        // Convert file to ArrayBuffer and then to Uint8Array
+        const arrayBuffer = await file.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+        
+        // Write file using Uint8Array instead of Buffer
+        await writeFile(filepath, uint8Array);
 
-      uploadedFiles.push({
-        originalName: file.name,
-        filename,
-        filepath: `/uploads/${botId}/${filename}`,
-        size: file.size,
-        type: file.type,
-        uploadedAt: new Date().toISOString(),
-      });
+        uploadedFiles.push({
+          originalName: file.name,
+          filename,
+          filepath: `/uploads/${botId}/${filename}`,
+          size: file.size,
+          type: file.type,
+          uploadedAt: new Date().toISOString(),
+        });
+      } catch (fileError) {
+        console.error(`Error saving file ${file.name}:`, fileError);
+        return NextResponse.json({ 
+          error: `Failed to save file: ${file.name}` 
+        }, { status: 500 });
+      }
     }
 
     return NextResponse.json({

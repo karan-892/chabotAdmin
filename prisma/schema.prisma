@@ -8,23 +8,56 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/* ---------- ENUMS ---------- */
+enum BotStatus {
+  DRAFT
+  PUBLISHED
+  DEPLOYED
+  ARCHIVED
+}
+
+enum KnowledgeBaseType {
+  TEXT
+  URL
+  FILE
+}
+
+enum KnowledgeBaseStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum FontFamily {
+  Inter
+  Roboto
+  OpenSans
+  System
+}
+
+/* ---------- MODELS ---------- */
+
 model User {
   id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name          String         @db.VarChar(255)
   email         String         @unique @db.VarChar(255)
-  image         String?
-  createdAt     DateTime?      @default(now()) @db.Timestamp(6)
-  updatedAt     DateTime?      @updatedAt @db.Timestamp(6)
+  image         String?        @db.VarChar(500)
+  createdAt     DateTime       @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime       @updatedAt @db.Timestamp(6)
+
   bots          Bot[]
   conversations Conversation[]
 
   @@map("users")
+  @@index([email])
 }
 
 model Bot {
   id                 String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId             String          @db.Uuid
   name               String          @db.VarChar(255)
-  description        String?
+  description        String?         @db.VarChar(1000)
   avatar             String?         @db.VarChar(500)
   status             BotStatus       @default(DRAFT)
   isPublic           Boolean         @default(false)
@@ -33,64 +66,64 @@ model Bot {
   intents            Json            @default("[]")
   entities           Json            @default("[]")
   deploymentUrl      String?         @db.VarChar(500)
-  apiKey             String?         @db.VarChar(255)
+  apiKey             String?         @unique @db.VarChar(255)
   totalConversations Int             @default(0)
   totalMessages      Int             @default(0)
-  userId             String          @db.Uuid
   createdAt          DateTime        @default(now()) @db.Timestamp(6)
   updatedAt          DateTime        @updatedAt @db.Timestamp(6)
-  analytics          BotAnalytics[]
+
   user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  conversations      Conversation[]
+  theme              Theme?
   knowledgeBase      KnowledgeBase[]
-  theme              BotTheme?
+  conversations      Conversation[]
+  analytics          BotAnalytics[]
 
   @@map("bots")
+  @@index([userId])
+  @@index([isPublic, status])
 }
 
-model BotTheme {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  botId           String   @unique @db.Uuid
-  primaryColor    String   @default("#0ea5e9") @db.VarChar(7)
-  secondaryColor  String   @default("#64748b") @db.VarChar(7)
-  backgroundColor String   @default("#ffffff") @db.VarChar(7)
-  textColor       String   @default("#1e293b") @db.VarChar(7)
-  fontFamily      String   @default("Inter") @db.VarChar(100)
-  fontSize        String   @default("14px") @db.VarChar(10)
-  borderRadius    String   @default("8px") @db.VarChar(10)
-  chatPosition    String   @default("bottom-right") @db.VarChar(20)
-  chatWidth       String   @default("400px") @db.VarChar(10)
-  chatHeight      String   @default("600px") @db.VarChar(10)
-  headerStyle     Json     @default("{}")
-  messageStyle    Json     @default("{}")
-  inputStyle      Json     @default("{}")
-  customCSS       String?  @db.Text
-  createdAt       DateTime @default(now()) @db.Timestamp(6)
-  updatedAt       DateTime @updatedAt @db.Timestamp(6)
-  bot             Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
+model Theme {
+  id              String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  botId           String       @unique @db.Uuid
+  primaryColor    String       @db.VarChar(50)
+  secondaryColor  String       @db.VarChar(50)
+  backgroundColor String       @db.VarChar(50)
+  textColor       String       @db.VarChar(50)
+  fontFamily      FontFamily   @default(Inter)
+  fontSize        String       @db.VarChar(20)
+  borderRadius    String       @db.VarChar(20)
+  chatPosition    String       @db.VarChar(30)
+  chatWidth       String       @db.VarChar(20)
+  chatHeight      String       @db.VarChar(20)
+  customCSS       String?      @db.Text
+  createdAt       DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime     @updatedAt @db.Timestamp(6)
 
-  @@map("bot_themes")
+  bot             Bot          @relation(fields: [botId], references: [id], onDelete: Cascade)
+
+  @@map("themes")
 }
 
 model KnowledgeBase {
-  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  botId       String            @db.Uuid
-  title       String            @db.VarChar(255)
-  content     String            @db.Text
-  type        KnowledgeType
-  sourceUrl   String?           @db.VarChar(500)
-  filePath    String?           @db.VarChar(500)
-  fileSize    Int?
-  mimeType    String?           @db.VarChar(100)
-  status      ProcessingStatus  @default(PENDING)
-  metadata    Json?             @default("{}")
-  vectorData  String?           @db.Text
-  chunks      Json?             @default("[]")
-  createdAt   DateTime          @default(now()) @db.Timestamp(6)
-  updatedAt   DateTime          @updatedAt @db.Timestamp(6)
-  bot         Bot               @relation(fields: [botId], references: [id], onDelete: Cascade)
+  id         String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  botId      String               @db.Uuid
+  title      String               @db.VarChar(255)
+  type       KnowledgeBaseType    @default(TEXT)
+  sourceUrl  String?              @db.VarChar(255)
+  content    String
+  filePath   String?              @db.VarChar(500)
+  fileSize   Int?
+  mimeType   String?              @db.VarChar(100)
+  status     KnowledgeBaseStatus  @default(PENDING)
+  metadata   Json?                @default("{}")
+  createdAt  DateTime             @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime             @updatedAt @db.Timestamp(6)
+
+  bot        Bot                  @relation(fields: [botId], references: [id], onDelete: Cascade)
 
   @@map("knowledge_base")
+  @@index([botId, status])
 }
 
 model Conversation {
@@ -104,11 +137,13 @@ model Conversation {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @updatedAt @db.Timestamp(6)
+
   bot       Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
   user      User?    @relation(fields: [userId], references: [id])
 
-  @@index([botId, sessionId])
   @@map("conversations")
+  @@index([botId, sessionId])
+  @@index([userId])
 }
 
 model BotAnalytics {
@@ -119,34 +154,9 @@ model BotAnalytics {
   messages      Int      @default(0)
   uniqueUsers   Int      @default(0)
   createdAt     DateTime @default(now()) @db.Timestamp(6)
+
   bot           Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
 
-  @@unique([botId, date])
   @@map("bot_analytics")
-}
-
-enum BotStatus {
-  DRAFT
-  PUBLISHED
-  DEPLOYED
-  ARCHIVED
-}
-
-enum KnowledgeType {
-  URL
-  TEXT
-  FILE
-  PDF
-  DOCX
-  TXT
-  CSV
-  JSON
-}
-
-enum ProcessingStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
-  INDEXED
+  @@unique([botId, date])
 }

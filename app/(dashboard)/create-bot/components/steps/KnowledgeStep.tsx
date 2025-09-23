@@ -22,7 +22,7 @@ export default function KnowledgeStep({ formData, updateFormData }: Props) {
 
     const newItem = {
       id: Date.now().toString(),
-      type: 'url' as const,
+      type: 'url' as const, 
       content: urlInput.trim(),
       status: 'pending' as const,
     };

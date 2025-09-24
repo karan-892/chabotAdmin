@@ -1,4 +1,4 @@
-import { Settings, User, Bell, Shield, Key } from 'lucide-react';
+import { Settings, User, Bell, Shield, Key, MessageSquare } from 'lucide-react';
 
 interface SettingsSidebarProps {
   activeTab: string;
@@ -8,6 +8,7 @@ interface SettingsSidebarProps {
 const tabs = [
   { id: 'profile', name: 'Profile', icon: User },
   { id: 'notifications', name: 'Notifications', icon: Bell },
+  { id: 'widget', name: 'Chat Widget', icon: MessageSquare },
   { id: 'security', name: 'Security', icon: Shield },
   { id: 'api', name: 'API Keys', icon: Key },
 ];

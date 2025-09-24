@@ -1,5 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/components/Avatar';
-import { Button } from '@/components/common/components/Button';
+import ProfileImageUpload from '@/components/settings/ProfileImageUpload';
 
 interface ProfileTabProps {
   session: any;
@@ -8,6 +7,10 @@ interface ProfileTabProps {
 }
 
 const ProfileTab = ({ session, formData, setFormData }: ProfileTabProps) => {
+  const handleImageChange = (imageUrl: string) => {
+    setFormData({ ...formData, image: imageUrl });
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -25,13 +28,14 @@ const ProfileTab = ({ session, formData, setFormData }: ProfileTabProps) => {
               <p className="text-sm text-zinc-400 mt-1">PNG, JPG up to 2MB</p>
             </div>
           </div>
+
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-2">Full Name</label>
               <input
                 type="text"
-                value={formData.name}
+                value={formData.name || ''}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full px-3 py-2 bg-black border border-zinc-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -40,22 +44,49 @@ const ProfileTab = ({ session, formData, setFormData }: ProfileTabProps) => {
               <label className="block text-sm font-medium text-zinc-300 mb-2">Email</label>
               <input
                 type="email"
-                value={formData.email}
+                value={formData.email || ''}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full px-3 py-2 bg-black border border-zinc-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
           
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">Workspace Name</label>
+              <input
+                type="text"
+                value={formData.workspace || ''}
+                onChange={(e) => setFormData({ ...formData, workspace: e.target.value })}
+                className="w-full px-3 py-2 bg-black border border-zinc-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="My Workspace"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">Website</label>
+              <input
+                type="url"
+                value={formData.website || ''}
+                onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                className="w-full px-3 py-2 bg-black border border-zinc-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="https://example.com"
+              />
+            </div>
+          </div>
+
           <div>
+
             <label className="block text-sm font-medium text-zinc-300 mb-2">Bio</label>
             <textarea
               rows={3}
-              value={formData.bio}
+              value={formData.bio || ''}
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
               placeholder="Tell us about yourself..."
               className="w-full px-3 py-2 bg-black border border-zinc-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <p className="text-xs text-zinc-400 mt-1">
+              Brief description for your profile. Maximum 160 characters.
+            </p>
           </div>
         </div>
       </div>

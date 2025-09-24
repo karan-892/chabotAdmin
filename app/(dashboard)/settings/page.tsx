@@ -18,8 +18,14 @@ export default function SettingsPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    image: '',
     workspace: '',
+    website: '',
+    location: '',
     bio: '',
+    widgetConfig: {},
+    selectedBotId: '',
+    apiKey: '',
   });
 
   const { execute: saveSettings, loading: saving, error: saveError } = useAsyncAction(
@@ -40,8 +46,14 @@ export default function SettingsPage() {
       setFormData({
         name: session.user.name || '',
         email: session.user.email || '',
+        image: session.user.image || '',
         workspace: `${session.user.name}'s Workspace`,
+        website: '',
+        location: '',
         bio: '',
+        widgetConfig: {},
+        selectedBotId: '',
+        apiKey: '',
       });
     }
   }, [session]);

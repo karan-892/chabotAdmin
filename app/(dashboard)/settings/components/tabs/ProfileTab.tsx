@@ -20,6 +20,10 @@ const ProfileTab = ({ session, formData, setFormData }: ProfileTabProps) => {
                 {session?.user?.name?.split(' ').map((n: string) => n[0]).join('')}
               </AvatarFallback>
             </Avatar>
+            <div>
+              <Button variant="outline" size="sm">Change Avatar</Button>
+              <p className="text-sm text-zinc-400 mt-1">PNG, JPG up to 2MB</p>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

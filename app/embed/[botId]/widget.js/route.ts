@@ -18,6 +18,10 @@ export async function GET(
   try {
     const bot = await prisma.bot.findUnique({
       where: { id: params.botId },
+      include: {
+        theme: true,
+        knowledgeBase: true,
+      },
     });
     console.log(bot)
 

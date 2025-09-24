@@ -19,6 +19,11 @@ export async function GET(
   try {
     const bot = await prisma.bot.findUnique({
       where: { id: botId },
+      include: {
+        theme: true,
+        knowledgeBase: true,
+      },
+
     });
 
     if (!bot || bot.status !== 'DEPLOYED') {
@@ -34,7 +39,7 @@ export async function GET(
         config = {};
       }
     }
-    const theme = config.theme || {};
+    const theme = bot.theme ;
 
     const html = `
 <!DOCTYPE html>
@@ -51,8 +56,8 @@ export async function GET(
         }
         
         body {
-            font-family: ${theme.fontFamily || 'Inter, sans-serif'};
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: ${theme?.fontFamily || 'Inter, sans-serif'};
+            background: ${theme?.secondaryColor + '20' || '#f0f4f8'};
             height: 100vh;
             display: flex;
             align-items: center;
@@ -68,10 +73,11 @@ export async function GET(
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            background: ${theme?.backgroundColor || '#ffffff'};
         }
         
         .chat-header {
-            background: ${theme.primaryColor || '#0ea5e9'};
+            background: ${theme?.primaryColor || '#0ea5e9'};
             color: white;
             padding: 20px;
             text-align: center;
@@ -89,6 +95,7 @@ export async function GET(
             display: flex;
             flex-direction: column;
             gap: 12px;
+            background: ${theme?.secondaryColor+'20' || '#ffffff'};
         }
         
         .message {
@@ -99,7 +106,7 @@ export async function GET(
         }
         
         .message.user {
-            background: ${theme.primaryColor || '#0ea5e9'};
+            background: ${theme?.primaryColor || '#0ea5e9'};
             color: white;
             align-self: flex-end;
             border-bottom-right-radius: 4px;
@@ -121,8 +128,8 @@ export async function GET(
         
         .quick-reply {
             background: white;
-            border: 1px solid ${theme.primaryColor || '#0ea5e9'};
-            color: ${theme.primaryColor || '#0ea5e9'};
+            border: 1px solid ${theme?.primaryColor || '#0ea5e9'};
+            color: ${theme?.primaryColor || '#0ea5e9'};
             padding: 6px 12px;
             border-radius: 16px;
             font-size: 12px;
@@ -131,7 +138,7 @@ export async function GET(
         }
         
         .quick-reply:hover {
-            background: ${theme.primaryColor || '#0ea5e9'};
+            background: ${theme?.primaryColor || '#0ea5e9'};
             color: white;
         }
         
@@ -152,11 +159,11 @@ export async function GET(
         }
         
         .chat-input input:focus {
-            border-color: ${theme.primaryColor || '#0ea5e9'};
+            border-color: ${theme?.primaryColor || '#0ea5e9'};
         }
         
         .send-button {
-            background: ${theme.primaryColor || '#0ea5e9'};
+            background: ${theme?.primaryColor || '#0ea5e9'};
             color: white;
             border: none;
             padding: 12px 20px;

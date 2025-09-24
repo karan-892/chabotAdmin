@@ -73,27 +73,6 @@ export default function SettingsTab({
           </div>
         </div>
 
-        {/* Appearance */}
-        <div className="bg-black border rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Appearance</h3>
-          <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">Primary Color</label>
-            <input
-              type="color"
-              value={bot.theme?.primaryColor }
-              onChange={(e) =>
-                setBot({
-                  ...bot,
-                  config: {
-                    ...bot.config,
-                    theme: { ...bot.config?.theme, primaryColor: e.target.value },
-                  },
-                })
-              }
-              className="w-full h-10 bg-zinc-700 border border-zinc-600 rounded-md"
-            />
-          </div>
-        </div>
       </div>
     </div>
   );

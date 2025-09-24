@@ -4,6 +4,7 @@ import { Save, Trash2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/common/components/Button';
 import ProfileTab from './tabs/ProfileTab';
 import NotificationsTab from './tabs/NotificationsTab';
+import WidgetTab from './tabs/WidgetTab';
 import SecurityTab from './tabs/SecurityTab';
 import ApiTab from './tabs/ApiTab';
 import { useState } from 'react';
@@ -46,11 +47,24 @@ const SettingsContent = ({
       case 'notifications':
         return <NotificationsTab />;
       
+      case 'widget':
+        return (
+          <WidgetTab 
+            formData={formData} 
+            setFormData={setFormData} 
+          />
+        );
+      
       case 'security':
         return <SecurityTab />;
       
       case 'api':
-        return <ApiTab />;
+        return (
+          <ApiTab 
+            formData={formData} 
+            setFormData={setFormData} 
+          />
+        );
       
       default:
         return null;
